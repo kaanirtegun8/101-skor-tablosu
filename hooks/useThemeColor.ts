@@ -1,22 +1,54 @@
-/**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
- */
+import { useTheme } from 'react-native-paper';
 
-import { useColorScheme } from 'react-native';
+interface ThemeProps {
+  light?: string;
+  dark?: string;
+}
 
-import { Colors } from '@/constants/Colors';
+// MD3Colors type definition from react-native-paper
+type ThemeColors = {
+  primary: string;
+  primaryContainer: string;
+  secondary: string;
+  secondaryContainer: string;
+  tertiary: string;
+  tertiaryContainer: string;
+  surface: string;
+  surfaceVariant: string;
+  background: string;
+  error: string;
+  errorContainer: string;
+  onPrimary: string;
+  onPrimaryContainer: string;
+  onSecondary: string;
+  onSecondaryContainer: string;
+  onTertiary: string;
+  onTertiaryContainer: string;
+  onSurface: string;
+  onSurfaceVariant: string;
+  onError: string;
+  onErrorContainer: string;
+  outline: string;
+  outlineVariant: string;
+  inverseOnSurface: string;
+  inverseSurface: string;
+  inversePrimary: string;
+  shadow: string;
+  surfaceTint: string;
+  scrim: string;
+  text: string;
+};
 
-export function useThemeColor(
-  props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
-) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
+export const useThemeColor = (
+  props: ThemeProps,
+  colorName: keyof ThemeColors
+): string => {
+  const theme = useTheme();
+  const colorFromProps = props.light || props.dark;
 
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    return theme.colors[colorName as keyof typeof theme.colors] as string;
   }
-}
+};
