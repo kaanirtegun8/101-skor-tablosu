@@ -25,6 +25,7 @@ export const AddScoreModal = ({
   rountCount,
 }: AddScoreModalProps) => {
   const [scores, setScores] = useState<{ [key: string]: string }>({});
+  const [error, setError] = useState<string | null>(null);
 
   const handleScoreChange = (playerName: string, value: string, isDefault = false) => {
     setScores({ ...scores, [playerName]: isDefault ? (Number(scores[playerName]) > 0 ? String(Number(scores[playerName]) * 2) : value) : value });
@@ -38,6 +39,12 @@ export const AddScoreModal = ({
   };
 
   const handleSave = () => {
+    const allFilled = playerList.every((player) => scores[player] && scores[player] !== "");
+    if (!allFilled) {
+      setError("Lütfen tüm oyuncular için skorları giriniz.");
+      return;
+    }
+
     Object.keys(scores).forEach((playerName) => {
       const score = parseInt(scores[playerName], 10);
       if (!isNaN(score)) {
@@ -45,13 +52,17 @@ export const AddScoreModal = ({
       }
     });
     setScores({});
+    setError(null);
     onClose();
   };
 
   const closeModal = () => {
     setScores({});
+    setError(null);
     onClose();
-  }
+  };
+
+  const allScoresFilled = playerList.every((player) => scores[player] && scores[player] !== "");
 
   return (
     <Modal isVisible={visible} style={styles.modal}>
@@ -66,9 +77,7 @@ export const AddScoreModal = ({
               style={styles.defaultButton}
               onPress={() => handleScoreChange(player, '200', true)}
             >
-              <Text style={styles.buttonText}>
-                200
-              </Text>
+              <Text style={styles.buttonText}>200</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -93,8 +102,14 @@ export const AddScoreModal = ({
           </View>
         ))}
 
+        {error && <Text style={styles.errorText}>{error}</Text>}
+
         <View style={styles.buttonRow}>
-          <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
+          <TouchableOpacity
+            onPress={handleSave}
+            style={[styles.saveButton, !allScoresFilled && styles.disabledButton]}
+            disabled={!allScoresFilled}
+          >
             <Text style={styles.buttonText}>Kaydet</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={closeModal} style={styles.cancelButton}>
@@ -172,6 +187,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
   },
+  disabledButton: {
+    backgroundColor: "#ccc",
+  },
   cancelButton: {
     backgroundColor: theme.colors.secondary,
     padding: 10,
@@ -183,5 +201,10 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 10,
   },
 });

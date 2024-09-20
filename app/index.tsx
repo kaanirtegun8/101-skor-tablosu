@@ -10,11 +10,13 @@ import ModeSelectionModal from '@/components/ModeSelectionModal';
 import TeamSelectionModal from '@/components/TeamSelectionModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useRouter } from 'expo-router';
+import { useSaveGame } from '@/hooks/useSaveGame';
 
 const Index = () => {
   const [activeModal, setActiveModal] = useState<'none' | 'mode' | 'player' | 'team'>('none');
   const [gameMode, setGameMode] = useState<'single' | 'team'>('single');
   const { players, addPlayer } = usePlayers();
+  const {game} = useSaveGame();
   const [selectedPlayers, setSelectedPlayers] = useState<boolean[]>(new Array(players.length).fill(false));
   const [selectedTeamPlayers, setSelectedTeamPlayers] = useState<Player[]>([]);
 
@@ -57,8 +59,6 @@ const Index = () => {
       .filter((_, index) => selectedPlayers[index])
       .map((player) => player.name);
 
-    console.log('Selected players for the game:', selectedPlayerNames);
-
     router.push({
       pathname: 'GameScreen',
       params: {
@@ -68,14 +68,34 @@ const Index = () => {
     });
   };
 
+  const continueLastGame = () => {
+    if (game) {
+      router.push({
+        pathname: "GameScreen",
+        params: {
+          players: JSON.stringify(game.playerList),
+          scores: JSON.stringify(game.scores),
+          prizes: JSON.stringify(game.prizes),
+          penalties: JSON.stringify(game.penalties),
+          totalScores: JSON.stringify(game.totalScores),
+          isContinuing: 'true',
+        },
+      });
+    } else {
+      console.log("No saved game found");
+    }
+  };
+  
+  
+  
+
   const handleAddPlayer = (playerName: string) => {
     addPlayer(playerName);
   };
 
   const onSelectTeams = () => {
     const selectedTeamPlayers = players.filter((_, index) => selectedPlayers[index]);
-    console.log('Selected team players:', selectedTeamPlayers);
-    setSelectedTeamPlayers(selectedTeamPlayers); // State'i güncelleyip log ekleyin
+    setSelectedTeamPlayers(selectedTeamPlayers);
     setActiveModal('team');
   };
 
@@ -95,6 +115,12 @@ const Index = () => {
           <ThemedView style={styles.container}>
             <Button mode="contained" onPress={startNewGame} style={styles.button}>
               Yeni Oyuna Başla
+            </Button>
+          </ThemedView>
+
+          <ThemedView style={styles.container}>
+            <Button mode="contained" onPress={continueLastGame} style={styles.button}>
+              Son Oyuna Devam Et
             </Button>
           </ThemedView>
         </ParallaxScrollView>

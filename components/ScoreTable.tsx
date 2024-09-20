@@ -1,25 +1,40 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { theme } from "@/constants/Colors";
 
 interface ScoreTableProps {
   playerList: string[];
   scores: { [key: string]: number[] };
+  onPrizeOrPenaltyModalToggle: (playerName: string) => void;
 }
 
-const ScoreTable = ({ playerList, scores }: ScoreTableProps) => {
+const ScoreTable = ({ playerList, scores, onPrizeOrPenaltyModalToggle }: ScoreTableProps) => {
   const maxRounds = Math.max(
     ...Object.values(scores).map((scoreArray) => scoreArray.length)
   );
+
+  const handlePrizeAndPenalty = (playerName: string) => {
+    onPrizeOrPenaltyModalToggle(playerName);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.headerRow}>
         <Text style={styles.roundHeader}></Text>
         {playerList.map((player, index) => (
-          <Text key={index} style={styles.playerName}>
-            {player}
-          </Text>
+          <TouchableOpacity
+            key={index}
+            style={[styles.playerColumn, styles.headerButton]}
+            onPress={() => handlePrizeAndPenalty(player)}
+          >
+            <Text style={styles.playerName}>{player}</Text>
+          </TouchableOpacity>
         ))}
       </View>
 
@@ -50,8 +65,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 10,
   },
-  playerName: {
+  headerButton: {
     flex: 1,
+  },
+  playerColumn: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
+  playerName: {
     fontSize: 16,
     fontWeight: "bold",
     color: theme.colors.onPrimary,
