@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface Player {
+  id: number;
   name: string;
 }
 
@@ -33,7 +34,8 @@ export const usePlayers = () => {
 
   const addPlayer = (playerName: string) => {
     if (playerName.trim()) {
-      const updatedPlayers = [...players, { name: playerName.trim() }];
+      const newPlayer: Player = { id: players.length + 1, name: playerName.trim() }; // id özelliğini ekliyoruz
+      const updatedPlayers = [...players, newPlayer];
       setPlayers(updatedPlayers);
       savePlayers(updatedPlayers);
     }

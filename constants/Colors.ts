@@ -12,3 +12,14 @@ export const theme = {
     onPrimary: "#ffffff",
   },
 };
+
+export const Colors = {
+  light: {
+    icon: '#000',
+    background: '#fff',
+  },
+  dark: {
+    icon: '#fff',
+    background: '#000',
+  },
+};

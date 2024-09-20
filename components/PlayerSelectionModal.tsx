@@ -14,6 +14,7 @@ interface PlayerSelectionModalProps {
   onTogglePlayer: (index: number) => void;
   onStartGame: () => void;
   onAddPlayer: (playerName: string) => void;
+  onSelectTeams: () => void; 
   gameMode: 'single' | 'team';
 }
 
@@ -25,6 +26,7 @@ const PlayerSelectionModal = ({
   onTogglePlayer,
   onStartGame,
   onAddPlayer,
+  onSelectTeams,
   gameMode,
 }: PlayerSelectionModalProps) => {
   const [isAddingPlayer, setIsAddingPlayer] = useState(false);
@@ -83,14 +85,25 @@ const PlayerSelectionModal = ({
 
             <PlayerList players={players} selectedPlayers={selectedPlayers} onTogglePlayer={onTogglePlayer} />
 
-            <Button
-              mode="contained"
-              onPress={onStartGame}
-              style={styles.startButton}
-              disabled={gameMode === 'team' ? selectedCount % 2 !== 0 : (selectedCount < MIN_PLAYER_COUNT)}
-            >
-              Oyuna Başla
-            </Button>
+            {gameMode === 'team' ? (
+              <Button
+                mode="contained"
+                onPress={onSelectTeams}
+                style={styles.startButton}
+                disabled={selectedCount % 2 !== 0}
+              >
+                Takımları Seç
+              </Button>
+            ) : (
+              <Button
+                mode="contained"
+                onPress={onStartGame}
+                style={styles.startButton}
+                disabled={selectedCount < MIN_PLAYER_COUNT}
+              >
+                Oyuna Başla
+              </Button>
+            )}
           </>
         )}
       </View>

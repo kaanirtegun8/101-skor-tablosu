@@ -1,37 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, ImageBackground } from 'react-native';
 import { Button, PaperProvider } from 'react-native-paper';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { theme } from '@/constants/Colors';
-import { usePlayers } from '@/hooks/usePlayers';
+import { Player, usePlayers } from '@/hooks/usePlayers';
 import { ThemedView } from '@/components/ThemedView';
 import PlayerSelectionModal from '@/components/PlayerSelectionModal';
-import ModeSelectionModal from '@/components/ModSelectionModal';
+import ModeSelectionModal from '@/components/ModeSelectionModal';
+import TeamSelectionModal from '@/components/TeamSelectionModal';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useRouter } from 'expo-router';
 
 const Index = () => {
-  const [isModeModalVisible, setModeModalVisible] = useState(false);
-  const [isPlayerModalVisible, setPlayerModalVisible] = useState(false);
+  const [activeModal, setActiveModal] = useState<'none' | 'mode' | 'player' | 'team'>('none');
   const [gameMode, setGameMode] = useState<'single' | 'team'>('single');
   const { players, addPlayer } = usePlayers();
   const [selectedPlayers, setSelectedPlayers] = useState<boolean[]>(new Array(players.length).fill(false));
+  const [selectedTeamPlayers, setSelectedTeamPlayers] = useState<Player[]>([]);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    setSelectedPlayers(new Array(players.length).fill(false));
+  }, [players]);
 
   const startNewGame = () => {
-    setModeModalVisible(true);
+    setActiveModal('mode');
   };
 
   const closeModeModal = () => {
-    setModeModalVisible(false);
+    setActiveModal('none');
   };
 
   const closePlayerModal = () => {
-    setPlayerModalVisible(false);
+    setActiveModal('none');
+  };
+
+  const closeTeamModal = () => {
+    setActiveModal('none');
   };
 
   const onSelectMode = (mode: 'single' | 'team') => {
     setGameMode(mode);
-    setModeModalVisible(false);
-    setPlayerModalVisible(true);
+    setActiveModal('player');
   };
 
   const onTogglePlayer = (index: number) => {
@@ -42,11 +53,36 @@ const Index = () => {
 
   const onStartGame = () => {
     closePlayerModal();
-    console.log('Starting game with the following team assignments:', selectedPlayers);
+    const selectedPlayerNames = players
+      .filter((_, index) => selectedPlayers[index])
+      .map((player) => player.name);
+
+    console.log('Selected players for the game:', selectedPlayerNames);
+
+    router.push({
+      pathname: 'GameScreen',
+      params: {
+        players: JSON.stringify(selectedPlayerNames), 
+        gameMode,
+      },
+    });
   };
 
   const handleAddPlayer = (playerName: string) => {
     addPlayer(playerName);
+  };
+
+  const onSelectTeams = () => {
+    const selectedTeamPlayers = players.filter((_, index) => selectedPlayers[index]);
+    console.log('Selected team players:', selectedTeamPlayers);
+    setSelectedTeamPlayers(selectedTeamPlayers); // State'i güncelleyip log ekleyin
+    setActiveModal('team');
+  };
+
+  const onSaveTeams = (team1: Player[], team2: Player[]) => {
+    closeTeamModal();
+    console.log('Team 1:', team1);
+    console.log('Team 2:', team2);
   };
 
   return (
@@ -64,20 +100,28 @@ const Index = () => {
         </ParallaxScrollView>
 
         <ModeSelectionModal
-          visible={isModeModalVisible}
+          visible={activeModal === 'mode'}
           onClose={closeModeModal}
           onSelectMode={onSelectMode}
         />
 
         <PlayerSelectionModal
-          visible={isPlayerModalVisible}
+          visible={activeModal === 'player'}
           onClose={closePlayerModal}
           players={players}
           selectedPlayers={selectedPlayers}
           onTogglePlayer={onTogglePlayer}
           onStartGame={onStartGame}
           onAddPlayer={handleAddPlayer}
+          onSelectTeams={onSelectTeams}
           gameMode={gameMode}
+        />
+
+        <TeamSelectionModal
+          visible={activeModal === 'team'}
+          onClose={closeTeamModal}
+          players={selectedTeamPlayers}
+          onSaveTeams={onSaveTeams}
         />
       </PaperProvider>
     </GestureHandlerRootView>
