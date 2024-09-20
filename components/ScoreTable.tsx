@@ -1,58 +1,96 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { theme } from "@/constants/Colors";
 
-const ScoreTable = ({ playerList }: { playerList: string[] }) => {
-  const [scores, setScores] = useState<{ [key: string]: string[] }>({});
+interface ScoreTableProps {
+  playerList: string[];
+  scores: { [key: string]: number[] };
+}
 
-  const handleScoreChange = (player: string, round: number, value: string) => {
-    setScores((prevScores) => ({
-      ...prevScores,
-      [player]: prevScores[player]
-        ? [...prevScores[player].slice(0, round), value, ...prevScores[player].slice(round + 1)]
-        : Array(round).fill('').concat(value),
-    }));
-  };
+const ScoreTable = ({ playerList, scores }: ScoreTableProps) => {
+  const maxRounds = Math.max(
+    ...Object.values(scores).map((scoreArray) => scoreArray.length)
+  );
 
   return (
-    <View style={styles.scoreTable}>
-      {playerList.map((player, index) => (
-        <View key={index} style={styles.playerColumn}>
-          <Text style={styles.playerName}>{player}</Text>
-          {[1, 2, 3, 4, 5].map((round) => (
-            <TextInput
-              key={round}
-              style={styles.input}
-              keyboardType="numeric"
-              placeholder={`El ${round}`}
-              onChangeText={(value) => handleScoreChange(player, round, value)}
-            />
-          ))}
-        </View>
-      ))}
+    <View style={styles.container}>
+      <View style={styles.headerRow}>
+        <Text style={styles.roundHeader}></Text>
+        {playerList.map((player, index) => (
+          <Text key={index} style={styles.playerName}>
+            {player}
+          </Text>
+        ))}
+      </View>
+
+      <ScrollView style={styles.scrollContainer}>
+        {Array.from({ length: maxRounds }).map((_, roundIndex) => (
+          <View key={roundIndex} style={styles.scoreRow}>
+            <Text style={styles.roundText}>{`${roundIndex + 1}.El`}</Text>
+
+            {playerList.map((player, playerIndex) => (
+              <Text key={playerIndex} style={styles.scoreText}>
+                {scores[player]?.[roundIndex] ?? "-"}
+              </Text>
+            ))}
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  scoreTable: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  container: {
+    padding: 8,
+    backgroundColor: theme.colors.background,
   },
-  playerColumn: {
-    flex: 1,
-    alignItems: 'center',
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
   },
   playerName: {
+    flex: 1,
     fontSize: 16,
-    marginBottom: 8,
+    fontWeight: "bold",
+    color: theme.colors.onPrimary,
+    textAlign: "center",
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 8,
-    marginVertical: 4,
-    width: 60,
-    textAlign: 'center',
+  roundHeader: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: theme.colors.onPrimary,
+    textAlign: "left",
+    flex: 0.5,
+  },
+  scrollContainer: {
+    maxHeight: 300,
+    borderWidth: 2,
+    borderColor: theme.colors.tertiary,
+    borderRadius: 8,
+    padding: 5,
+  },
+  scoreRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.tertiary,
+  },
+  roundText: {
+    flex: 0.5,
+    fontSize: 14,
+    color: theme.colors.tertiary,
+    textAlign: "left",
+  },
+  scoreText: {
+    flex: 1,
+    fontSize: 14,
+    color: theme.colors.secondary,
+    textAlign: "center",
   },
 });
 

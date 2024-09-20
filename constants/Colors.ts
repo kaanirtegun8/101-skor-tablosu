@@ -1,4 +1,5 @@
 import { MD3LightTheme } from "react-native-paper";
+import { red900, redA200 } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
 
 export const theme = {
   ...MD3LightTheme,
@@ -10,6 +11,7 @@ export const theme = {
     tertiary: "#81b29a",
     background: "#004b23", 
     onPrimary: "#ffffff",
+    red900: '#b71c1c',
   },
 };
 
