@@ -12,6 +12,16 @@ export const theme = {
     background: "#004b23", 
     onPrimary: "#ffffff",
     red900: '#b71c1c',
+    redA200: '#ff5252',
+    accent: "#f4a261", 
+    highlight: "#f2e9e4", 
+    text: "#264653", 
+    success: "#2a9d8f", 
+    warning: "#e9c46a", 
+    error: "#e76f51", 
+    lightGray: "#e0e0e0", 
+    darkGray: "#333333", 
+    darkGreen: "#003d1f", 
   },
 };
 

@@ -15,8 +15,8 @@ interface PlayerSelectionModalProps {
   visible: boolean;
   onClose: () => void;
   players: Player[];
-  selectedPlayers: boolean[];
-  onTogglePlayer: (index: number) => void;
+  selectedPlayers: string[];
+  onTogglePlayer: (playerName: string) => void;
   onStartGame: () => void;
   onAddPlayer: (playerName: string) => void;
   onSelectTeams: () => void; 
@@ -45,7 +45,7 @@ const PlayerSelectionModal = ({
     }
   };
 
-  const selectedCount = selectedPlayers.filter(Boolean).length;
+  const selectedCount = selectedPlayers.length;
 
   return (
     <Modal
