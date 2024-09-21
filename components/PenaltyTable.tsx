@@ -11,23 +11,22 @@ interface PenaltyTableProps {
 const PenaltyTable = ({ playerList, penalties, prizes }: PenaltyTableProps) => {
   return (
     <View style={styles.penaltyContainer}>
-      <Text style={styles.penaltyTitle}>Cezalar</Text>
+      <Text style={styles.penaltyTitle}>Ödül ve Cezalar</Text>
       <View style={styles.tableContainer}>
         {playerList.map((player, index) => (
           <View key={index} style={styles.playerContainer}>
             <Text style={styles.playerName}>{player}</Text>
             <Text style={styles.penaltyText}>
-              {penalties[player]?.join(', ') || 'No penalties'}
+              {penalties[player]?.map(penalty => penalty * -1).join(', ') || 'Ceza yok'}
             </Text>
             <View style={styles.prizeContainer}>
-              <Text style={styles.prizeText}>Ödüller: </Text>
               {prizes[player]?.flatMap((prize, prizeIndex) => (
                 <View key={prizeIndex} style={styles.starContainer}>
                   {Array.from({ length: Math.floor(prize / 100) }).map((_, starIndex) => (
                     <Icon name="star" size={16} color="#FFD700" key={starIndex} />
                   ))}
                 </View>
-              )) || <Text>No prizes</Text>}
+              )) || <Text>Yıldız Yok</Text>}
             </View>
           </View>
         ))}
@@ -45,7 +44,7 @@ const styles = StyleSheet.create({
   penaltyTitle: {
     fontWeight: 'bold',
     fontSize: 18,
-    marginBottom: 4,
+    marginBottom: 8,
     textAlign: 'center',
   },
   tableContainer: {

@@ -14,6 +14,7 @@ import { AddScoreModal } from "@/components/AddScoreModal";
 import { AddPrizeAndPenaltyModal } from "@/components/AddPrizeAndPenaltyModal";
 import { TotalScoreModal } from "@/components/TotalScoreModal";
 import { useSaveGame } from "@/hooks/useSaveGame";
+import DiceComponent from "@/components/Dice";
 
 const GameScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -35,18 +36,24 @@ const GameScreen = () => {
     isContinuing,
   } = useLocalSearchParams();
 
-  const continuingGame = isContinuing === "true"; 
-
+  const continuingGame = isContinuing === "true";
 
   useEffect(() => {
     if (continuingGame) {
       setScores(savedScores ? JSON.parse(savedScores as string) : {});
       setPrizes(savedPrizes ? JSON.parse(savedPrizes as string) : {});
       setPenalties(savedPenalties ? JSON.parse(savedPenalties as string) : {});
-      setTotalScores(savedTotalScores ? JSON.parse(savedTotalScores as string) : {});
+      setTotalScores(
+        savedTotalScores ? JSON.parse(savedTotalScores as string) : {}
+      );
     }
-  }, [continuingGame, savedScores, savedPrizes, savedPenalties, savedTotalScores]);
-  
+  }, [
+    continuingGame,
+    savedScores,
+    savedPrizes,
+    savedPenalties,
+    savedTotalScores,
+  ]);
 
   const { saveGame } = useSaveGame();
 
@@ -156,6 +163,9 @@ const GameScreen = () => {
           penalties={penalties}
           prizes={prizes}
         />
+
+        <DiceComponent />
+        
       </ScrollView>
 
       <View style={styles.actionButtons}>
@@ -258,6 +268,15 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     paddingHorizontal: 8,
     width: "100%",
+  },
+  diceContainer: {
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  diceText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: theme.colors.primary,
   },
 });
 

@@ -30,7 +30,6 @@ import {
     };
   
     const handleAddScore = () => {
-      // Convert the string to a number and negate it if it's positive
       const numericScore = Number(score) > 0 ? -Math.abs(Number(score)) : Number(score);
       if (!isNaN(numericScore)) {
         onAddPrizeOrPenalty(playerName, numericScore);
