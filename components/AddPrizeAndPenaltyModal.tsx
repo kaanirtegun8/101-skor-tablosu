@@ -51,7 +51,8 @@ import {
           <View style={styles.inputRow}>
             <TextInput
               style={styles.input}
-              placeholder="Enter penalty points"
+              placeholder="Ceza puanı giriniz"
+              placeholderTextColor={theme.colors.text}
               keyboardType="numeric"
               value={score}
               onChangeText={setScore} 

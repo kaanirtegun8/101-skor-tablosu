@@ -96,6 +96,7 @@ export const AddScoreModal = ({
               style={styles.input}
               keyboardType="numeric"
               placeholder="Skor"
+              placeholderTextColor={theme.colors.text}
               value={scores[player] || ""}
               onChangeText={(value) => handleScoreChange(player, value)}
             />
