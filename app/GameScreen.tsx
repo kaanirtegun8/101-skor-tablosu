@@ -16,6 +16,8 @@ import { TotalScoreModal } from "@/components/TotalScoreModal";
 import { Game, useSaveGame } from "@/hooks/useSaveGame";
 import DiceComponent from "@/components/Dice";
 import EndGameModal from "@/components/EndGameModal";
+import { useAlert } from "@/hooks/useAlert";
+import Alert from "@/components/Alert";
 
 const GameScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -38,6 +40,8 @@ const GameScreen = () => {
     isContinuing,
     startTime,
   } = useLocalSearchParams();
+
+  const { showAlert, alert} = useAlert();
   
   const continuingGame = isContinuing === "true";
 
@@ -146,6 +150,11 @@ const GameScreen = () => {
   };
 
   const handleToggleEndGameModal = () => {
+    if(Object.keys(scores).length === 0){
+      showAlert("Oyunu bitirebilmek için en az bir el skorunu girmelisiniz.");
+      return;
+    }
+
     calculateTotalScores();
     setEndGameModalVisible(!isEndGameModalVisible);
   };
@@ -272,6 +281,7 @@ const GameScreen = () => {
         }}
         finishGame={handleFinishGame}
       />
+      <Alert message={alert.message} visible={alert.visible} />
     </View>
   );
 };

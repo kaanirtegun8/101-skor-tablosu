@@ -92,7 +92,7 @@ const EndGameModal = ({
   return (
     <Modal isVisible={visible} style={styles.modal}>
       <View style={styles.content}>
-        <Text style={styles.title}>Liderlik Tablosu</Text>
+        <Text style={styles.title}>Puan Tablosu</Text>
 
         {leaderboard.map((entry, index) => {
         const [emojiPlayer, score] = entry.split(":");
