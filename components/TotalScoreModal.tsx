@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import Modal from "react-native-modal";
-import { theme } from "@/constants/Colors"; // Varsayılan renkler için
+import { theme } from "@/constants/Colors";
 
 interface TotalScoreModalProps {
   visible: boolean;

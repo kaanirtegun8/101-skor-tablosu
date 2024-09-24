@@ -7,16 +7,13 @@ const DiceComponent = () => {
   const [animation] = useState(new Animated.Value(0));
   const [opacity] = useState(new Animated.Value(0));
 
-  // Referans tutarak interval'leri dışarıda kontrol edebiliriz
   const dice1IntervalRef = useRef<NodeJS.Timeout | null>(null);
   const dice2IntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const rollDice = () => {
-    // Önceki animasyonlar veya interval'ler varsa temizle
     if (dice1IntervalRef.current) clearInterval(dice1IntervalRef.current);
     if (dice2IntervalRef.current) clearInterval(dice2IntervalRef.current);
 
-    // Zarları dönerken numaraların sürekli değişmesini sağla
     dice1IntervalRef.current = setInterval(() => {
       const randomDice1 = Math.floor(Math.random() * 6) + 1;
       setDice1Image(getDiceImage(randomDice1));
@@ -27,13 +24,11 @@ const DiceComponent = () => {
       setDice2Image(getDiceImage(randomDice2));
     }, 50);
 
-    // Animasyonu başlat
     Animated.sequence([
-      Animated.timing(opacity, { toValue: 1, duration: 500, useNativeDriver: true }), // Zarları görünür yap
-      Animated.timing(animation, { toValue: 1440, duration: 3000, useNativeDriver: true }), // Zarları döndür
-      Animated.timing(animation, { toValue: 0, duration: 0, useNativeDriver: true }), // Animasyonun sonuna gel
+      Animated.timing(opacity, { toValue: 1, duration: 500, useNativeDriver: true }), 
+      Animated.timing(animation, { toValue: 1440, duration: 3000, useNativeDriver: true }), 
+      Animated.timing(animation, { toValue: 0, duration: 0, useNativeDriver: true }), 
     ]).start(() => {
-      // Interval'leri temizle ve zarların son yüzlerini ayarla
       if (dice1IntervalRef.current) clearInterval(dice1IntervalRef.current);
       if (dice2IntervalRef.current) clearInterval(dice2IntervalRef.current);
 
@@ -43,7 +38,6 @@ const DiceComponent = () => {
       setDice2Image(getDiceImage(finalDice2));
     });
 
-    // 8 saniye sonra zarların kaybolmasını sağla
     setTimeout(() => {
       Animated.timing(opacity, { toValue: 0, duration: 500, useNativeDriver: true }).start();
     }, 8000);

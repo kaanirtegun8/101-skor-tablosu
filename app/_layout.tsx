@@ -2,8 +2,8 @@ import { Stack } from "expo-router";
 import { StackScreenProps } from '@react-navigation/stack';
 
 type RootStackParamList = {
-  index: undefined; // index ekranına parametre gönderilmiyor
-  GameScreen: { players: string[]; gameMode: 'single' | 'team' }; // GameScreen parametreleri
+  index: undefined; 
+  GameScreen: { players: string[]; gameMode: 'single' | 'team' };
 };
 
 

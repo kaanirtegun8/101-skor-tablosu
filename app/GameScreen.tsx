@@ -6,20 +6,22 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { theme } from "@/constants/Colors";
 import ScoreTable from "@/components/ScoreTable";
 import PenaltyTable from "@/components/PenaltyTable";
 import { AddScoreModal } from "@/components/AddScoreModal";
 import { AddPrizeAndPenaltyModal } from "@/components/AddPrizeAndPenaltyModal";
 import { TotalScoreModal } from "@/components/TotalScoreModal";
-import { useSaveGame } from "@/hooks/useSaveGame";
+import { Game, useSaveGame } from "@/hooks/useSaveGame";
 import DiceComponent from "@/components/Dice";
+import EndGameModal from "@/components/EndGameModal";
 
 const GameScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
   const [isPrizeModalVisible, setPrizeModalVisible] = useState(false);
   const [isTotalScoreModalVisible, setTotalScoreModalVisible] = useState(false);
+  const [isEndGameModalVisible, setEndGameModalVisible] = useState(false);
   const [scores, setScores] = useState<{ [key: string]: number[] }>({});
   const [penalties, setPenalties] = useState<{ [key: string]: number[] }>({});
   const [prizes, setPrizes] = useState<{ [key: string]: number[] }>({});
@@ -27,17 +29,28 @@ const GameScreen = () => {
   const [totalScores, setTotalScores] = useState<{ [key: string]: number }>({});
 
   const {
-    players,
+    players = [],
     gameMode,
     scores: savedScores,
     prizes: savedPrizes,
     penalties: savedPenalties,
     totalScores: savedTotalScores,
     isContinuing,
+    startTime,
   } = useLocalSearchParams();
-
+  
   const continuingGame = isContinuing === "true";
 
+  const cleanStartTime = typeof startTime === "string" ? startTime.replaceAll('"', '') : startTime;
+
+  const gameStartTime = Array.isArray(cleanStartTime)
+    ? cleanStartTime.length > 0
+      ? new Date(cleanStartTime[0]) 
+      : new Date() 
+    : typeof cleanStartTime === "string"
+    ? new Date(cleanStartTime) 
+    : new Date(); 
+  
   useEffect(() => {
     if (continuingGame) {
       setScores(savedScores ? JSON.parse(savedScores as string) : {});
@@ -55,16 +68,33 @@ const GameScreen = () => {
     savedTotalScores,
   ]);
 
-  const { saveGame } = useSaveGame();
+  useEffect(() => {
+    if (
+      Object.keys(scores).length ||
+      Object.keys(prizes).length ||
+      Object.keys(penalties).length
+    ) {
+      handleGameSave();
+    }
+  }, [scores, prizes, penalties, totalScores]);
 
-  const handleGameSave = () => {
-    saveGame({
-      playerList: players as string[],
+  const { saveLastGame, finishGame } = useSaveGame();
+
+  const handleGameSave = async () => {
+    const game = {
+      playerList,
       scores,
       prizes,
       penalties,
       totalScores,
-    });
+      startTime: gameStartTime,
+    } as Game;
+
+    try {
+      await saveLastGame(game);
+    } catch (error) {
+      console.error("Failed to save the game:", error);
+    }
   };
 
   const handleAddScore = (playerName: string, score: number) => {
@@ -75,8 +105,6 @@ const GameScreen = () => {
         [playerName]: [...playerScores, score],
       };
     });
-
-    handleGameSave();
   };
 
   const togglePrizeModal = () => {
@@ -110,13 +138,21 @@ const GameScreen = () => {
       });
     }
     togglePrizeModal();
-    handleGameSave();
   };
 
   const handleTogglePrizeModal = (playerName: string) => {
     setSelectedPlayer(playerName);
     togglePrizeModal();
-    handleGameSave();
+  };
+
+  const handleToggleEndGameModal = () => {
+    calculateTotalScores();
+    setEndGameModalVisible(!isEndGameModalVisible);
+  };
+
+  const handleOpenTotalScoreModal = () => {
+    calculateTotalScores();
+    toggleTotalScoreModal();
   };
 
   const calculateTotalScores = () => {
@@ -140,8 +176,23 @@ const GameScreen = () => {
     );
 
     setTotalScores(totalScores);
-    toggleTotalScoreModal();
-    handleGameSave();
+  };
+
+  const handleFinishGame = () => {
+    calculateTotalScores();
+
+    const game = {
+      playerList,
+      scores,
+      prizes,
+      penalties,
+      totalScores,
+      gameStartTime,
+    } as Game;
+
+    finishGame(game);
+    handleToggleEndGameModal();
+    router.push("/");
   };
 
   const playerList = Array.isArray(players)
@@ -165,19 +216,18 @@ const GameScreen = () => {
         />
 
         <DiceComponent />
-        
       </ScrollView>
 
       <View style={styles.actionButtons}>
         <View style={styles.buttonRow}>
           <TouchableOpacity
-            onPress={calculateTotalScores}
+            onPress={handleOpenTotalScoreModal}
             style={styles.scoreButton}
           >
             <Text style={styles.buttonText}>Toplam Skor</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => console.log("")}
+            onPress={handleToggleEndGameModal}
             style={styles.endGameButton}
           >
             <Text style={styles.buttonText}>Oyunu Bitir</Text>
@@ -207,6 +257,20 @@ const GameScreen = () => {
         visible={isTotalScoreModalVisible}
         onClose={toggleTotalScoreModal}
         totalScore={totalScores}
+      />
+
+      <EndGameModal
+        visible={isEndGameModalVisible}
+        onClose={handleToggleEndGameModal}
+        game={{
+          playerList,
+          scores,
+          prizes,
+          penalties,
+          totalScores,
+          startTime: gameStartTime,
+        }}
+        finishGame={handleFinishGame}
       />
     </View>
   );

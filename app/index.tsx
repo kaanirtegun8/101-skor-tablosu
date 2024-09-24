@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { StyleSheet, ImageBackground } from "react-native";
-import { Button, PaperProvider } from "react-native-paper";
+import { Button, PaperProvider, Text } from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { theme } from "@/constants/Colors";
 import { Player, usePlayers } from "@/hooks/usePlayers";
@@ -10,7 +11,9 @@ import ModeSelectionModal from "@/components/ModeSelectionModal";
 import TeamSelectionModal from "@/components/TeamSelectionModal";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
-import { useSaveGame } from "@/hooks/useSaveGame";
+import { Game, useSaveGame } from "@/hooks/useSaveGame";
+import { useAlert } from "@/hooks/useAlert";
+import Alert from "@/components/Alert";
 
 const Index = () => {
   const [activeModal, setActiveModal] = useState<
@@ -18,27 +21,20 @@ const Index = () => {
   >("none");
   const [gameMode, setGameMode] = useState<"single" | "team">("single");
   const { players, addPlayer } = usePlayers();
-  const { game } = useSaveGame();
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [selectedTeamPlayers, setSelectedTeamPlayers] = useState<Player[]>([]);
 
   const router = useRouter();
+  const { loadGame, loadAllGames } = useSaveGame();
+  const { alert, showAlert } = useAlert();
 
   const startNewGame = () => {
     setActiveModal("mode");
   };
 
-  const closeModeModal = () => {
-    setActiveModal("none");
-  };
-
-  const closePlayerModal = () => {
+  const closeModals = () => {
     setActiveModal("none");
     setSelectedPlayers([]);
-  };
-
-  const closeTeamModal = () => {
-    setActiveModal("none");
   };
 
   const onSelectMode = (mode: "single" | "team") => {
@@ -48,30 +44,33 @@ const Index = () => {
 
   const onTogglePlayer = (selectedPlayerName: string) => {
     let updatedSelectedPlayers = [...selectedPlayers];
+    const playerIndex = updatedSelectedPlayers.indexOf(selectedPlayerName);
 
-    const playerIndex = updatedSelectedPlayers.findIndex((playerName) => playerName === selectedPlayerName);
     if (playerIndex === -1) {
       updatedSelectedPlayers.push(selectedPlayerName);
     } else {
-      updatedSelectedPlayers = updatedSelectedPlayers.filter((name) => name !== selectedPlayerName);
+      updatedSelectedPlayers.splice(playerIndex, 1);
     }
 
     setSelectedPlayers(updatedSelectedPlayers);
   };
 
   const onStartGame = () => {
-    closePlayerModal();
-
+    closeModals();
     router.push({
       pathname: "GameScreen",
       params: {
         players: JSON.stringify(selectedPlayers),
+        startTime: new Date().toISOString(),
         gameMode,
+        isContinuing: "false",
       },
     });
   };
 
-  const continueLastGame = () => {
+  const continueLastGame = async () => {
+    const game: Game = await loadGame();
+
     if (game) {
       router.push({
         pathname: "GameScreen",
@@ -81,17 +80,16 @@ const Index = () => {
           prizes: JSON.stringify(game.prizes),
           penalties: JSON.stringify(game.penalties),
           totalScores: JSON.stringify(game.totalScores),
+          startTime: JSON.stringify(game.startTime),
           isContinuing: "true",
         },
       });
     } else {
-      console.log("No saved game found");
+      showAlert("Kayıtlı oyun bulunamadı.");
     }
   };
 
-  const handleAddPlayer = (playerName: string) => {
-    addPlayer(playerName);
-  };
+  const handleAddPlayer = (playerName: string) => addPlayer(playerName);
 
   const onSelectTeams = () => {
     const selectedTeamPlayers = players.filter(
@@ -101,11 +99,11 @@ const Index = () => {
     setActiveModal("team");
   };
 
-  const onSaveTeams = (team1: Player[], team2: Player[]) => {
-    closeTeamModal();
-    console.log("Team 1:", team1);
-    console.log("Team 2:", team2);
-  };
+  const onSaveTeams = (team1: Player[], team2: Player[]) => closeModals();
+
+  const showAllGames = () => router.push({ pathname: "AllGames" });
+
+  const showStatistics = () => router.push({ pathname: "Statistics" });
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -127,8 +125,11 @@ const Index = () => {
               mode="contained"
               onPress={startNewGame}
               style={styles.button}
+              icon={() => (
+                <Icon name="gamepad-variant" size={24} color="white" />
+              )}
             >
-              Yeni Oyuna Başla
+              <Text style={styles.buttonLabel}>Yeni Oyuna Başla</Text>
             </Button>
           </ThemedView>
 
@@ -137,21 +138,46 @@ const Index = () => {
               mode="contained"
               onPress={continueLastGame}
               style={styles.button}
+              icon={() => (
+                <Icon name="play-circle-outline" size={24} color="white" />
+              )}
             >
-              Son Oyuna Devam Et
+              <Text style={styles.buttonLabel}>Son Oyuna Devam Et</Text>
+            </Button>
+          </ThemedView>
+
+          <ThemedView style={styles.container}>
+            <Button
+              mode="contained"
+              onPress={showAllGames}
+              style={styles.button}
+              icon={() => <Icon name="history" size={24} color="white" />}
+            >
+              <Text style={styles.buttonLabel}>Kayıtlı Oyunları Gör</Text>
+            </Button>
+          </ThemedView>
+
+          <ThemedView style={styles.container}>
+            <Button
+              mode="contained"
+              onPress={showStatistics}
+              style={styles.button}
+              icon={() => <Icon name="chart-line" size={24} color="white" />}
+            >
+              <Text style={styles.buttonLabel}>İstatistikler</Text>
             </Button>
           </ThemedView>
         </ParallaxScrollView>
 
         <ModeSelectionModal
           visible={activeModal === "mode"}
-          onClose={closeModeModal}
+          onClose={closeModals}
           onSelectMode={onSelectMode}
         />
 
         <PlayerSelectionModal
           visible={activeModal === "player"}
-          onClose={closePlayerModal}
+          onClose={closeModals}
           players={players}
           selectedPlayers={selectedPlayers}
           onTogglePlayer={onTogglePlayer}
@@ -163,10 +189,12 @@ const Index = () => {
 
         <TeamSelectionModal
           visible={activeModal === "team"}
-          onClose={closeTeamModal}
+          onClose={closeModals}
           players={selectedTeamPlayers}
           onSaveTeams={onSaveTeams}
         />
+
+        <Alert message={alert.message} visible={alert.visible} />
       </PaperProvider>
     </GestureHandlerRootView>
   );
@@ -174,10 +202,6 @@ const Index = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: "center",
-    padding: 20,
-    paddingTop: 30,
     backgroundColor: theme.colors.background,
   },
   headerImage: {
@@ -186,7 +210,17 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 8,
-    borderRadius: 15,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    width: "100%",
+  },
+  buttonLabel: {
+    justifyContent: "flex-start",
+    textAlign: "left",
+    color: "white",
   },
 });
 
