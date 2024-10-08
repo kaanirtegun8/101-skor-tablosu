@@ -196,7 +196,7 @@ const GameScreen = () => {
       prizes,
       penalties,
       totalScores,
-      gameStartTime,
+      startTime: gameStartTime,
     } as Game;
 
     finishGame(game);

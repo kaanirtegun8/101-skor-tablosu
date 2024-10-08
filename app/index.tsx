@@ -101,7 +101,16 @@ const Index = () => {
 
   const onSaveTeams = (team1: Player[], team2: Player[]) => closeModals();
 
-  const showAllGames = () => router.push({ pathname: "AllGames" });
+  const showAllGames = async () => {
+    const games: Game[] = await loadAllGames();
+    
+    router.push({
+      pathname: "AllGames",
+      params: {
+        games: JSON.stringify(games),
+      },
+    });
+  };
 
   const showStatistics = () => router.push({ pathname: "Statistics" });
 
@@ -211,7 +220,7 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 8,
     borderRadius: 10,
-    shadowColor: "#000",
+    shadowColor: "black",
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,

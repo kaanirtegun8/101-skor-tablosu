@@ -1,4 +1,5 @@
 import { theme } from "@/constants/Colors";
+import useCalculateGameDuration from "@/hooks/useCalculateGameDuration";
 import { Game } from "@/hooks/useSaveGame";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
@@ -76,17 +77,6 @@ const EndGameModal = ({
     });
   };
 
-  const calculateGameDuration = () => {
-    const now = new Date();
-    const startTime = game.startTime ? new Date(game.startTime) : now;
-    const durationInMilliseconds = now.getTime() - startTime.getTime();
-
-    const minutes = Math.floor((durationInMilliseconds / 1000 / 60) % 60);
-    const hours = Math.floor(durationInMilliseconds / 1000 / 60 / 60);
-
-    return hours > 0 ? `${hours} saat ${minutes} dakika` : `${minutes} dakika`;
-  };
-
   const leaderboard = generateLeaderboard(game.totalScores);
 
   return (
@@ -109,7 +99,7 @@ const EndGameModal = ({
 
         <View style={styles.time}>
           <Text style={styles.timeText}>
-            Oyun Süresi: {calculateGameDuration()}
+            Oyun Süresi: {useCalculateGameDuration({startTime: game.startTime, endTime: game.endTime})}
           </Text>
         </View>
 

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Animated,
 } from "react-native";
 import { theme } from "@/constants/Colors";
 
@@ -14,13 +15,25 @@ interface ScoreTableProps {
   onPrizeOrPenaltyModalToggle: (playerName: string) => void;
 }
 
-const ScoreTable = ({ playerList, scores, onPrizeOrPenaltyModalToggle }: ScoreTableProps) => {
+const ScoreTable = ({
+  playerList,
+  scores,
+  onPrizeOrPenaltyModalToggle,
+}: ScoreTableProps) => {
   const maxRounds = Math.max(
-    ...Object.values(scores).map((scoreArray) => scoreArray.length)
+    ...Object.values(scores).map((scoreArray) => scoreArray.length),
+    0 
   );
 
   const handlePrizeAndPenalty = (playerName: string) => {
     onPrizeOrPenaltyModalToggle(playerName);
+  };
+
+  const renderScoreText = (score: number | undefined) => {
+    if (score === undefined) {
+      return <FlashingText text="Oyun Başlıyor..." />;
+    }
+    return <Text style={styles.scoreText}>{score}</Text>;
   };
 
   return (
@@ -39,19 +52,50 @@ const ScoreTable = ({ playerList, scores, onPrizeOrPenaltyModalToggle }: ScoreTa
       </View>
 
       <ScrollView style={styles.scrollContainer}>
-        {Array.from({ length: maxRounds }).map((_, roundIndex) => (
+        {Array.from({ length: maxRounds || 1 }).map((_, roundIndex) => (
           <View key={roundIndex} style={styles.scoreRow}>
             <Text style={styles.roundText}>{`${roundIndex + 1}.El`}</Text>
 
             {playerList.map((player, playerIndex) => (
-              <Text key={playerIndex} style={styles.scoreText}>
-                {scores[player]?.[roundIndex] ?? "-"}
-              </Text>
+              <View key={playerIndex} style={styles.scoreCell}>
+                {renderScoreText(scores[player]?.[roundIndex])}
+              </View>
             ))}
           </View>
         ))}
       </ScrollView>
     </View>
+  );
+};
+
+const FlashingText = ({ text }: { text: string }) => {
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    const flashingAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 3000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    flashingAnimation.start();
+
+    return () => flashingAnimation.stop();
+  }, [opacity]);
+
+  return (
+    <Animated.Text style={[styles.flashingText, { opacity }]}>
+      {text}
+    </Animated.Text>
   );
 };
 
@@ -88,6 +132,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     maxHeight: 300,
+    minHeight: 300,
     borderWidth: 2,
     borderColor: theme.colors.tertiary,
     borderRadius: 8,
@@ -108,10 +153,19 @@ const styles = StyleSheet.create({
     color: theme.colors.tertiary,
     textAlign: "left",
   },
-  scoreText: {
+  scoreCell: {
     flex: 1,
+    alignItems: "center",
+  },
+  scoreText: {
     fontSize: 14,
     color: theme.colors.secondary,
+    textAlign: "center",
+  },
+  flashingText: {
+    fontSize: 14,
+    color: theme.colors.accent, 
+    fontWeight: "bold",
     textAlign: "center",
   },
 });

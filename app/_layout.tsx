@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import { StackScreenProps } from '@react-navigation/stack';
 
 type RootStackParamList = {
   index: undefined; 
@@ -12,6 +11,7 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="index" />
       <Stack.Screen name="GameScreen"/>
+      <Stack.Screen name="AllGames"/>
     </Stack>
   );
 }
