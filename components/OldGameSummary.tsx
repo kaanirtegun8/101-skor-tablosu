@@ -60,7 +60,7 @@ const OldGameSummary = ({ game }: OldGameSummaryProps) => {
                 <Text style={styles.tableText}>{calculateTotal(game.penalties[player]) * (-1)}</Text>
               </DataTable.Cell>
               <DataTable.Cell numeric style={[styles.tableCell, styles.fixedColumn]}>
-                <Text style={styles.tableText}>{game.totalScores[player]}</Text>
+                <Text style={[styles.tableText, styles.totalScores]}>{game.totalScores[player]}</Text>
               </DataTable.Cell>
             </DataTable.Row>
           ))}
@@ -132,6 +132,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
+  totalScores: {
+    color: "black",
+    fontWeight: "bold",
+  }
 });
 
 export default OldGameSummary;
