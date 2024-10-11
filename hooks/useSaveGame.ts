@@ -10,6 +10,12 @@ export interface Game {
   endTime?: Date;
 }
 
+export interface filterOptions {
+  startDate?: Date;
+  players?: string[];
+  playerCount?: number;
+}
+
 export const useSaveGame = () => {
   const saveLastGame = async (game: Game) => {
     try {
@@ -55,19 +61,33 @@ export const useSaveGame = () => {
     }
   };
 
-  const loadAllGames = async () => {
+  const loadAllGames = async (filterOptions?: filterOptions) => {
     try {
       const savedGames = await AsyncStorage.getItem("allGames");
-      if (savedGames) {
-        const parsedGames = JSON.parse(savedGames);
-        return parsedGames;
+      if (!savedGames) return [];
+
+      let parsedGames: Game[] = JSON.parse(savedGames);
+
+      if (filterOptions) {
+        const { startDate, players, playerCount } = filterOptions;
+
+        parsedGames = parsedGames.filter((game) => {
+          const startDateMatch = startDate ? new Date(game.startTime!) >= new Date(startDate) : true;
+          const playerCountMatch = playerCount ? game.playerList.length === playerCount : true;
+          const playersMatch = players ? players.every(player => game.playerList.includes(player)) : true;
+
+          return startDateMatch && playerCountMatch && playersMatch;
+        });
+
       }
-      return [];
+
+      return parsedGames;
     } catch (error) {
       console.error("Error loading all games", error);
       return [];
     }
   };
+
 
   const finishGame = async (game: Game) => {
     await saveAllGames(game);

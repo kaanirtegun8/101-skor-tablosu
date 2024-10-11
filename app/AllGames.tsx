@@ -1,22 +1,34 @@
 import OldGameSummary from "@/components/OldGameSummary";
 import { theme } from "@/constants/Colors";
-import { Game } from "@/hooks/useSaveGame";
+import { Game, useSaveGame } from "@/hooks/useSaveGame";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Text } from "react-native-paper";
+import { FAB, Text } from "react-native-paper";
+import { filterOptions } from "@/hooks/useSaveGame";
+import { FilterModal } from "@/components/FilterModal";
+import { useStatistic } from "@/hooks/useStatistic";
 
 const AllGames = () => {
   const [allGames, setAllGames] = useState<Game[]>([]);
 
-  const { games } = useLocalSearchParams();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [filterOptions, setFilterOptions] = useState<filterOptions | undefined>(undefined);
+
+  const {games} = useStatistic(filterOptions);
 
   useEffect(() => {
-    if (games) {
-      const parsedGames = JSON.parse(games as string) as Game[];
-      setAllGames(parsedGames);
-    }
+    setAllGames(games);
   }, [games]);
+
+  const toggleFilterModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
+  const applyFilter = (filters: filterOptions) => {
+    setFilterOptions(filters);
+    toggleFilterModal();
+  };
 
   return (
     <View style={styles.container}>
@@ -34,6 +46,15 @@ const AllGames = () => {
           <Text>No games played yet</Text>
         )}
       </ScrollView>
+
+      <FilterModal visible={isModalVisible} onClose={toggleFilterModal} onApply={applyFilter} />
+
+      <FAB
+        icon="filter"
+        size="medium"
+        style={styles.fab}
+        onPress={toggleFilterModal}
+      />
     </View>
   );
 };
@@ -59,6 +80,12 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",  
     justifyContent: "center",
+  },
+  fab: {
+    position: "absolute",
+    right: 20,
+    bottom: 20,
+    backgroundColor: theme.colors.tertiary,
   },
 });
 

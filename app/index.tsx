@@ -102,13 +102,8 @@ const Index = () => {
   const onSaveTeams = (team1: Player[], team2: Player[]) => closeModals();
 
   const showAllGames = async () => {
-    const games: Game[] = await loadAllGames();
-    
     router.push({
       pathname: "AllGames",
-      params: {
-        games: JSON.stringify(games),
-      },
     });
   };
 

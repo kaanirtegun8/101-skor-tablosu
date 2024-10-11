@@ -34,7 +34,7 @@ export const usePlayers = () => {
 
   const addPlayer = (playerName: string) => {
     if (playerName.trim()) {
-      const newPlayer: Player = { id: players.length + 1, name: playerName.trim() }; // id özelliğini ekliyoruz
+      const newPlayer: Player = { id: players.length + 1, name: playerName.trim() }; 
       const updatedPlayers = [...players, newPlayer];
       setPlayers(updatedPlayers);
       savePlayers(updatedPlayers);

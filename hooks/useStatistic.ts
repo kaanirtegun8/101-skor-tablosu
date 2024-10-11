@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Game, useSaveGame } from "@/hooks/useSaveGame";
+import { filterOptions, Game, useSaveGame } from "@/hooks/useSaveGame";
 
 export interface PlayerStatistic {
   playerName: string;
@@ -277,18 +277,18 @@ const calculateAverageRankingPosition = (games: Game[]): PlayerStatistic[] => {
     .sort((a, b) => a.score - b.score);
 };
 
-export const useStatistic = () => {
+export const useStatistic = (filterOptions?: filterOptions) => {
   const [games, setGames] = useState<Game[]>([]);
   const { loadAllGames } = useSaveGame();
 
   useEffect(() => {
     const fetchGames = async () => {
-      const allGames = await loadAllGames();
+      const allGames = await loadAllGames(filterOptions);
       setGames(allGames);
     };
 
     fetchGames();
-  }, []);
+  }, [filterOptions]);
 
   const calculateAverageScoresByMatch = useMemo(() => {
     const playerScoresMap: { [key: string]: number[] } = {};
@@ -331,15 +331,20 @@ export const useStatistic = () => {
     const playerPenaltiesMap: { [key: string]: number[] } = {};
 
     games.forEach((game: Game) => {
-      Object.keys(game.penalties).forEach((player) => {
+      Object.keys(game.totalScores).forEach((player) => {
         if (!playerPenaltiesMap[player]) {
           playerPenaltiesMap[player] = [];
         }
-        const totalPenalties = game.penalties[player].reduce(
-          (sum, penalty) => sum + penalty * -1,
-          0
-        );
-        playerPenaltiesMap[player].push(totalPenalties);
+
+        if(game.penalties[player]){
+          const totalPenalties = game.penalties[player].reduce(
+            (sum, penalty) => sum + penalty * -1,
+            0
+          );
+          playerPenaltiesMap[player].push(totalPenalties);
+        } else {
+          playerPenaltiesMap[player].push(0);
+        }
       });
     });
 
@@ -348,20 +353,25 @@ export const useStatistic = () => {
 
   const calculateAverageRewardsByGame = useMemo(() => {
     const playerRewardsMap: { [key: string]: number[] } = {};
-
+  
     games.forEach((game: Game) => {
-      Object.keys(game.prizes).forEach((player) => {
+      Object.keys(game.totalScores).forEach((player) => {
         if (!playerRewardsMap[player]) {
           playerRewardsMap[player] = [];
         }
-        const totalRewards = game.prizes[player].reduce(
-          (sum, reward) => sum + reward,
-          0
-        );
-        playerRewardsMap[player].push(totalRewards);
+  
+        if (game.prizes[player]) {
+          const totalRewards = game.prizes[player].reduce(
+            (sum, reward) => sum + reward,
+            0
+          );
+          playerRewardsMap[player].push(totalRewards);
+        } else {
+          playerRewardsMap[player].push(0);
+        }
       });
     });
-
+  
     return calculateAverageRewardsOrPenalties(playerRewardsMap);
   }, [games]);
 
