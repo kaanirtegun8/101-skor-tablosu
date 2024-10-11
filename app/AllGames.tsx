@@ -1,7 +1,6 @@
 import OldGameSummary from "@/components/OldGameSummary";
 import { theme } from "@/constants/Colors";
-import { Game, useSaveGame } from "@/hooks/useSaveGame";
-import { useLocalSearchParams } from "expo-router";
+import { Game} from "@/hooks/useSaveGame";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { FAB, Text } from "react-native-paper";

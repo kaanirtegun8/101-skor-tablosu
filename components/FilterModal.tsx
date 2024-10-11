@@ -98,6 +98,7 @@ export const FilterModal = ({
           defaultValue={query}
           onChangeText={(text) => setQuery(text)}
           placeholder="Oyuncu Ara..."
+          placeholderTextColor={theme.colors.text}
           onFocus={() => ToggleDropdownPlayers(true)}
           onBlur={() => ToggleDropdownPlayers(false)}
           flatListProps={{

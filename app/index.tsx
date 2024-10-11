@@ -101,13 +101,13 @@ const Index = () => {
 
   const onSaveTeams = (team1: Player[], team2: Player[]) => closeModals();
 
-  const showAllGames = async () => {
-    router.push({
-      pathname: "AllGames",
-    });
-  };
+  const showAllGames = async () => router.push({ pathname: "AllGames" });
 
   const showStatistics = () => router.push({ pathname: "Statistics" });
+
+  const showSettings = () => router.push({ pathname: "Settings" });
+
+  const showGameRules = () => router.push({ pathname: "GameRules" });
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -169,6 +169,30 @@ const Index = () => {
               icon={() => <Icon name="chart-line" size={24} color="white" />}
             >
               <Text style={styles.buttonLabel}>İstatistikler</Text>
+            </Button>
+          </ThemedView>
+
+          <ThemedView style={styles.container}>
+            <Button
+              mode="contained"
+              onPress={showSettings}
+              style={styles.button}
+              icon={() => <Icon name="cog" size={24} color="white" />}
+            >
+              <Text style={styles.buttonLabel}>Ayarlar</Text>
+            </Button>
+          </ThemedView>
+
+          <ThemedView style={styles.container}>
+            <Button
+              mode="contained"
+              onPress={showGameRules}
+              style={styles.button}
+              icon={() => (
+                <Icon name="file-document-outline" size={24} color="white" />
+              )}
+            >
+              <Text style={styles.buttonLabel}>Oyun Kuralları</Text>
             </Button>
           </ThemedView>
         </ParallaxScrollView>
