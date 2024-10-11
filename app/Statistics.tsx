@@ -12,7 +12,11 @@ const Statistics = () => {
     calculateAveragePenaltiesByGame,
     calculateAverageRewardsByGame,
     calculateConsecutive200s,
-    calculateConsecutiveNegatives
+    calculateConsecutiveNegatives,
+    calculateAverageRankingByGame,
+    maxScores,
+    minScores,
+    playerRatings
   } = useStatistic();
 
   const statisticsData = [
@@ -28,24 +32,44 @@ const Statistics = () => {
     },
     {
       id: '3',
+      data: calculateAverageRankingByGame,
+      title: "Oyun Başına Ortalama Sıralama",
+    },
+    {
+      id: '4',
       data: calculateAveragePenaltiesByGame,
       title: "Oyun Başına Ortalama Cezalar",
     },
     {
-      id: '4',
+      id: '5',
       data: calculateAverageRewardsByGame,
       title: "Oyun Başına Ortalama Ödüller",
     },
     {
-      id: '5',
+      id: '6',
       data: calculateConsecutive200s,
       title: "Üst üste açamama (el sayısı)",
     }, 
     {
-      id: '6',
+      id: '7',
       data: calculateConsecutiveNegatives,
       title: "Üst üste bitme (el sayısı)",
-    }
+    },
+    {
+      id: '8',
+      data: maxScores,
+      title: "Bir turda Alınan en yüksek puan",
+    },
+    {
+      id: '9',
+      data: minScores,
+      title: "Bir turda alınan en düşük puan",
+    },
+    {
+      id: '10',
+      data: playerRatings,
+      title: "AI performans değerlendirmeleri (10 üzerinden)",
+    },
   ];
 
   return (

@@ -6,6 +6,173 @@ export interface PlayerStatistic {
   score: number;
   startTime?: Date[] | undefined;
 }
+export interface PlayerStatistic {
+  playerName: string;
+  score: number;
+}
+
+enum PlayerRatingIndicator {
+  AVERAGE_SCORE = 2,
+  AVERAGE_SCORE_PER_ROUND = 2,
+  AVERAGE_POSITION = 3,
+  AVERAGE_PENALTY = 2,
+  AVERAGE_REWARD = 1,
+
+  CONSECUTIVE_200 = 1,
+  CONSECUTIVE_NEGATIVE = 1,
+}
+
+const calculatePlayerRatingIndicator = (
+  rewardPosition: number,
+  averagePerRoundPosition: number,
+  averagePosition: number,
+  penaltyPosition: number,
+  rankingPosition: number,
+  length: number
+): number => {
+  return parseFloat(
+    (
+      PlayerRatingIndicator.AVERAGE_REWARD / rewardPosition +
+      PlayerRatingIndicator.AVERAGE_SCORE_PER_ROUND / averagePerRoundPosition +
+      PlayerRatingIndicator.AVERAGE_POSITION / averagePosition +
+      penaltyPosition / PlayerRatingIndicator.AVERAGE_PENALTY +
+      PlayerRatingIndicator.AVERAGE_SCORE / rankingPosition
+    ).toFixed(2)
+  );
+};
+
+const calculatePlayerRating = (
+  averageScores: PlayerStatistic[],
+  averageScoresPerRound: PlayerStatistic[],
+  averageRankings: PlayerStatistic[],
+  averagePenalties: PlayerStatistic[],
+  averageRewards: PlayerStatistic[]
+) => {
+  const playerRatings: PlayerStatistic[] = [];
+
+  const averageScoresPerRoundWithPositions = averageScoresPerRound.map(
+    (average, index) => ({
+      playerName: average.playerName,
+      position: index + 1,
+    })
+  );
+
+  const averageRankingsWithPositions = averageRankings
+    .map((ranking) => ({
+      playerName: ranking.playerName,
+      score: ranking.score,
+    }))
+    .sort((a, b) => {
+      if (a.score === b.score) {
+        const aAveragePerRound = averageScoresPerRound.find(
+          (r) => r.playerName === a.playerName
+        );
+        const bAveragePerRound = averageScoresPerRound.find(
+          (r) => r.playerName === b.playerName
+        );
+
+        if (aAveragePerRound && bAveragePerRound) {
+          return aAveragePerRound.score - bAveragePerRound.score;
+        }
+      }
+      return a.score - b.score;
+    });
+
+  const rankedPlayersWithPositions = averageRankingsWithPositions.map(
+    (ranking, index) => ({
+      playerName: ranking.playerName,
+      position: index + 1,
+    })
+  );
+
+  const averageScoresWithPositions = averageScores.map((average, index) => ({
+    playerName: average.playerName,
+    position: index + 1,
+  }));
+
+  const averagePenaltiesWithPositions = averagePenalties.map(
+    (penalty, index) => ({
+      playerName: penalty.playerName,
+      position: index + 1,
+    })
+  );
+
+  const averageRewardsWithPositions = averageRewards.map((reward, index) => ({
+    playerName: reward.playerName,
+    position: index + 1,
+  }));
+
+  averageScoresWithPositions.forEach((average) => {
+    const ranking = rankedPlayersWithPositions.find(
+      (r) => r.playerName === average.playerName
+    );
+    const penalty = averagePenaltiesWithPositions.find(
+      (p) => p.playerName === average.playerName
+    );
+    const reward = averageRewardsWithPositions.find(
+      (r) => r.playerName === average.playerName
+    );
+    const averagePerRound = averageScoresPerRoundWithPositions.find(
+      (r) => r.playerName === average.playerName
+    );
+
+    if (ranking && penalty && reward && averagePerRound) {
+      playerRatings.push({
+        playerName: average.playerName,
+        score: calculatePlayerRatingIndicator(
+          reward.position,
+          averagePerRound.position,
+          average.position,
+          penalty.position,
+          ranking.position,
+          averageScores.length
+        ),
+      });
+    }
+  });
+
+  return playerRatings.sort((a, b) => b.score - a.score);
+};
+
+const calculateMaxScoresPerPlayer = (games: Game[]): PlayerStatistic[] => {
+  const playerScoresMap: { [key: string]: number[] } = {};
+
+  games.forEach((game: Game) => {
+    Object.keys(game.scores).forEach((player) => {
+      if (!playerScoresMap[player]) {
+        playerScoresMap[player] = [];
+      }
+      playerScoresMap[player].push(...game.scores[player]);
+    });
+  });
+
+  return Object.keys(playerScoresMap)
+    .map((player) => {
+      const maxScore = Math.max(...playerScoresMap[player]);
+      return { playerName: player, score: maxScore };
+    })
+    .sort((a, b) => b.score - a.score);
+};
+
+const calculateMinScoresPerPlayer = (games: Game[]): PlayerStatistic[] => {
+  const playerScoresMap: { [key: string]: number[] } = {};
+
+  games.forEach((game: Game) => {
+    Object.keys(game.scores).forEach((player) => {
+      if (!playerScoresMap[player]) {
+        playerScoresMap[player] = [];
+      }
+      playerScoresMap[player].push(...game.scores[player]);
+    });
+  });
+
+  return Object.keys(playerScoresMap)
+    .map((player) => {
+      const minScore = Math.min(...playerScoresMap[player]);
+      return { playerName: player, score: minScore };
+    })
+    .sort((a, b) => a.score - b.score);
+};
 
 const calculateMaxConsecutiveNegatives = (scoresMap: {
   [key: string]: number[];
@@ -22,13 +189,13 @@ const calculateMaxConsecutiveNegatives = (scoresMap: {
             maxConsecutive = currentStreak;
           }
         } else {
-          currentStreak = 0; 
+          currentStreak = 0;
         }
       });
 
       return { playerName: player, score: maxConsecutive };
     })
-    .sort((a, b) => b.score - a.score); 
+    .sort((a, b) => b.score - a.score);
 };
 
 const calculateAverageScores = (scoresMap: {
@@ -76,7 +243,38 @@ const calculateMaxConsecutive200s = (scoresMap: {
 
       return { playerName: player, score: maxConsecutive };
     })
-    .sort((a, b) => b.score - a.score); 
+    .sort((a, b) => b.score - a.score);
+};
+
+const calculateAverageRankingPosition = (games: Game[]): PlayerStatistic[] => {
+  const playerRankingMap: { [key: string]: number[] } = {};
+
+  games.forEach((game: Game) => {
+    const rankedPlayers = Object.keys(game.totalScores).sort(
+      (a, b) => game.totalScores[a] - game.totalScores[b]
+    );
+
+    rankedPlayers.forEach((player, index) => {
+      if (!playerRankingMap[player]) {
+        playerRankingMap[player] = [];
+      }
+      playerRankingMap[player].push(index + 1);
+    });
+  });
+
+  return Object.keys(playerRankingMap)
+    .map((player) => {
+      const totalRanking = playerRankingMap[player].reduce(
+        (sum, rank) => sum + rank,
+        0
+      );
+      const averageRanking = totalRanking / playerRankingMap[player].length;
+      return {
+        playerName: player,
+        score: parseFloat(averageRanking.toFixed(1)),
+      };
+    })
+    .sort((a, b) => a.score - b.score);
 };
 
 export const useStatistic = () => {
@@ -175,7 +373,7 @@ export const useStatistic = () => {
         if (!playerScoresMap[player]) {
           playerScoresMap[player] = [];
         }
-        playerScoresMap[player].push(...game.scores[player]); 
+        playerScoresMap[player].push(...game.scores[player]);
       });
     });
 
@@ -197,6 +395,34 @@ export const useStatistic = () => {
     return calculateMaxConsecutiveNegatives(playerScoresMap);
   }, [games]);
 
+  const calculateAverageRankingByGame = useMemo(() => {
+    return calculateAverageRankingPosition(games);
+  }, [games]);
+
+  const maxScores = useMemo(() => {
+    return calculateMaxScoresPerPlayer(games);
+  }, [games]);
+
+  const minScores = useMemo(() => {
+    return calculateMinScoresPerPlayer(games);
+  }, [games]);
+
+  const playerRatings = useMemo(() => {
+    const averageScores = calculateAverageScoresByMatch;
+    const averageScoresPerRound = calculateAverageScoresPerRound;
+    const averageRankings = calculateAverageRankingByGame;
+    const averagePenalties = calculateAveragePenaltiesByGame;
+    const averageRewards = calculateAverageRewardsByGame;
+
+    return calculatePlayerRating(
+      averageScores,
+      averageScoresPerRound,
+      averageRankings,
+      averagePenalties,
+      averageRewards
+    );
+  }, [games]);
+
   return {
     games,
     calculateAverageScoresByMatch,
@@ -204,6 +430,10 @@ export const useStatistic = () => {
     calculateAveragePenaltiesByGame,
     calculateAverageRewardsByGame,
     calculateConsecutive200s,
-    calculateConsecutiveNegatives
+    calculateConsecutiveNegatives,
+    calculateAverageRankingByGame,
+    maxScores,
+    minScores,
+    playerRatings,
   };
 };
