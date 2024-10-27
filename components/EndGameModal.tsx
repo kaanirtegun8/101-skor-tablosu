@@ -3,6 +3,7 @@ import useCalculateGameDuration from "@/hooks/useCalculateGameDuration";
 import { Game } from "@/hooks/useSaveGame";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
+import { Divider } from "react-native-paper";
 
 interface EndGameModalProps {
   visible: boolean;
@@ -17,93 +18,24 @@ const EndGameModal = ({
   onClose,
   finishGame,
 }: EndGameModalProps) => {
-  const generateLeaderboard = (totalScores: { [key: string]: number }) => {
-    const sortedPlayers = Object.entries(totalScores).sort(
-      ([, a], [, b]) => a - b
-    );
-
-    const secondPlaceEmojiList = [
-      "🤴",
-      "🎩",
-      "👨‍🚀",
-      "🧑‍⚖️",
-      "🦸",
-      "🕵️",
-      "🧙‍♂️",
-      "🎓",
-      "🤵",
-      "🕴️",
-      "🧛",
-    ];
-
-    const thirdPlaceEmojiList = [
-      "💩",
-      "🪣",
-      "🦨",
-      "🧻",
-      "🐌",
-      "🧀",
-      "🥑",
-      "🐢",
-      "🐸",
-      "🪳",
-      "🍟",
-      "🍔",
-      "🎃",
-      "🤡",
-    ];
-
-    return sortedPlayers.map(([player, score], index) => {
-      let emoji = "";
-
-      if (index === 0) {
-        emoji = "👑";
-      } else if (index === sortedPlayers.length - 1) {
-        emoji = "🫏";
-      } else if (index === 1) {
-        emoji =
-          secondPlaceEmojiList[
-            Math.floor(Math.random() * secondPlaceEmojiList.length)
-          ];
-      } else if (index === 2) {
-        emoji =
-          thirdPlaceEmojiList[
-            Math.floor(Math.random() * thirdPlaceEmojiList.length)
-          ];
-      } else {
-        emoji = "🤡";
-      }
-      return `${emoji} ${player}:      ${score} puan`;
-    });
-  };
-
-  const leaderboard = generateLeaderboard(game.totalScores);
 
   return (
     <Modal isVisible={visible} style={styles.modal}>
       <View style={styles.content}>
-        <Text style={styles.title}>Puan Tablosu</Text>
 
-        {leaderboard.map((entry, index) => {
-        const [emojiPlayer, score] = entry.split(":");
-        const [emoji, player] = emojiPlayer.split(" ");
+       <Text style={styles.descriptionText}>
+          Oyunu bitirmek istediğinize emin misiniz?
+       </Text>
+       <Text style={styles.descriptionHintText}>
+          ( Bu işlem geri alınamaz )
+       </Text>
 
-        return (
-          <View key={index} style={styles.leaderboardRow}>
-            <Text style={styles.emojiText}>{emoji}</Text>
-            <Text style={styles.playerText}>{player}</Text>
-            <Text style={styles.scoreText}>{score}</Text>
-          </View>
-        );
-      })}
+       <Text style={styles.gameDuration}>
+          Oyun süresi: {useCalculateGameDuration({ startTime: game.startTime, endTime: game.endTime })}
+       </Text>
 
-        <View style={styles.time}>
-          <Text style={styles.timeText}>
-            Oyun Süresi: {useCalculateGameDuration({startTime: game.startTime, endTime: game.endTime})}
-          </Text>
-        </View>
+       <Divider style={styles.divider} />
 
-        <View style={styles.divider} />
 
         <View style={styles.actionButtonsRow}>
           <TouchableOpacity
@@ -126,80 +58,65 @@ const EndGameModal = ({
 };
 
 const styles = StyleSheet.create({
-    modal: {
-      justifyContent: "center",
-      alignItems: "center",
-      width: "auto",
+  modal: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "auto",
+  },
+  content: {
+    backgroundColor: "white",
+    paddingHorizontal: 12,
+    paddingVertical: 20,
+    borderRadius: 16,
+    width: "90%",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
     },
-    content: {
-      backgroundColor: "white",
-      padding: 12,
-      borderRadius: 16,
-      width: "90%",
-      shadowColor: "#000",
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: "bold",
-      color: theme.colors.primary,
-      marginBottom: 16,
-      textAlign: "center",
-    },
-    actionButtonsRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      width: "100%",
-    },
-    divider: {
-      height: 1,
-      backgroundColor: "#ccc",
-      width: "100%",
-      marginBottom: 20,
-    },
-    buttons: {
-      width: "48%",
-      paddingHorizontal: 20,
-      paddingVertical: 10,
-      borderRadius: 12,
-      alignItems: "center",
-    },
-    buttonText: {
-      color: "#fff",
-      fontSize: 16,
-    },
-    leaderboardRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginVertical: 8,
-      marginHorizontal: 16,
-    },
-    emojiText: {
-      fontSize: 40,
-      marginRight: 8, 
-    },
-    playerText: {
-      fontSize: 18,
-      color: theme.colors.text,
-    },
-    scoreText: {
-      fontSize: 18,
-      color: theme.colors.text,
-      marginLeft: "auto",
-    },
-    time: {
-      marginTop: 30,
-    },
-    timeText: {
-      fontSize: 16,
-      color: theme.colors.text,
-    },
-  });
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  actionButtonsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  buttons: {
+    width: "48%",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  descriptionText: {
+    fontSize: 16,
+    color: "#333",
+    paddingHorizontal: 12,
+    textAlign: "center",
+  },
+  descriptionHintText: {
+    fontSize: 12,
+    color: "#666",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#ccc",
+    width: "100%",
+    marginBottom: 20,
+  },
+  gameDuration: {
+    fontSize: 12,
+    color: "#333",
+    marginTop: 20,
+  },
+});
 
 export default EndGameModal;

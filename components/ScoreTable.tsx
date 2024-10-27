@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -22,7 +22,7 @@ const ScoreTable = ({
 }: ScoreTableProps) => {
   const maxRounds = Math.max(
     ...Object.values(scores).map((scoreArray) => scoreArray.length),
-    0 
+    0
   );
 
   const handlePrizeAndPenalty = (playerName: string) => {
@@ -43,7 +43,11 @@ const ScoreTable = ({
         {playerList.map((player, index) => (
           <TouchableOpacity
             key={index}
-            style={[styles.playerColumn, styles.headerButton]}
+            style={[
+              styles.playerColumn,
+              styles.headerButton,
+              maxRounds % playerList.length === index && styles.currentPlayer,
+            ]}
             onPress={() => handlePrizeAndPenalty(player)}
           >
             <Text style={styles.playerName}>{player}</Text>
@@ -164,9 +168,16 @@ const styles = StyleSheet.create({
   },
   flashingText: {
     fontSize: 14,
-    color: theme.colors.accent, 
+    color: theme.colors.accent,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  currentPlayer: {
+    borderWidth: 1,
+    borderColor: theme.colors.tertiary,
+    paddingBottom: 5,
+    paddingTop: 5,
+    borderStyle: "dashed",
   },
 });
 

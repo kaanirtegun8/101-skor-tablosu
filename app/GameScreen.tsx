@@ -266,6 +266,14 @@ const GameScreen = () => {
         visible={isTotalScoreModalVisible}
         onClose={toggleTotalScoreModal}
         totalScore={totalScores}
+        game={{
+          playerList,
+          scores,
+          prizes,
+          penalties,
+          totalScores,
+          startTime: gameStartTime
+        }}
       />
 
       <EndGameModal

@@ -39,7 +39,7 @@ import {
     };
   
     const handleAddStarScore = () => {
-      onAddPrizeOrPenalty(playerName, 100);
+      onAddPrizeOrPenalty(playerName, 101);
       setScore("");
       onClose();
     };
@@ -60,16 +60,16 @@ import {
   
             <TouchableOpacity
               style={[styles.button, { backgroundColor: "#f44336" }]}
-              onPress={() => setScore("100")}
+              onPress={() => setScore("101")}
             >
-              <Text style={styles.buttonText}>100</Text>
+              <Text style={styles.buttonText}>101</Text>
             </TouchableOpacity>
           </View>
           <TouchableOpacity
             style={[styles.starButton, { backgroundColor: theme.colors.primary }]}
             onPress={handleAddStarScore}
           >
-            <Text style={styles.buttonText}>⭐ Ekle</Text>
+            <Text style={styles.buttonText}>⭐ (-101) Ekle</Text>
           </TouchableOpacity>
           <View style={styles.actionButtonRow}>
             <TouchableOpacity

@@ -34,7 +34,7 @@ export const AddScoreModal = ({
   const handleCompleteDirectly = (player: string) => {
     setScores({
       ...scores,
-      [player]: (scores[player] && Number(scores[player]) <= 0) ? String(Number(scores[player]) * 2) : "-100",
+      [player]: (scores[player] && Number(scores[player]) <= 0) ? String(Number(scores[player]) * 2) : "-101",
     });
   };
 
@@ -75,9 +75,14 @@ export const AddScoreModal = ({
 
             <TouchableOpacity
               style={styles.defaultButton}
-              onPress={() => handleScoreChange(player, '200', true)}
+              onPress={() => handleScoreChange(player, '202', true)}
             >
-              <Text style={styles.buttonText}>200</Text>
+              <Text style={styles.buttonText}>
+                202{" "}
+                {Number(scores[player]) > 0
+                  ? `x ${Math.round(Number(scores[player]) / 202)}`
+                  : ``}{" "}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -87,7 +92,7 @@ export const AddScoreModal = ({
               <Text style={styles.buttonText}>
                 Biter{" "}
                 {Number(scores[player]) < 0
-                  ? `x ${Number(scores[player]) / -100}`
+                  ? `x ${Math.round(Number(scores[player]) / -101)}`
                   : ``}{" "}
               </Text>
             </TouchableOpacity>
