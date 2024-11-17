@@ -136,6 +136,9 @@ const styles = StyleSheet.create({
     right: 20,
     bottom: 20,
     backgroundColor: theme.colors.tertiary,
+    zIndex: 10,
+    borderWidth: 1, // Çerçeve ekler
+    borderColor: "red", // Çerçeve rengi
   },
 });
 
