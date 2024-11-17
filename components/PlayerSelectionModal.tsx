@@ -10,6 +10,7 @@ import PlayerList from "@/components/PlayerList";
 import Modal from "react-native-modal";
 import { MIN_PLAYER_COUNT } from "@/constants/GameRules";
 import { Player } from "@/hooks/usePlayers";
+import { theme } from "@/constants/Colors";
 
 interface PlayerSelectionModalProps {
   visible: boolean;
@@ -163,6 +164,7 @@ const styles = StyleSheet.create({
   startButton: {
     marginTop: 20,
     marginBottom: 10,
+    backgroundColor: theme.colors.primary,
   },
   input: {
     borderWidth: 1,

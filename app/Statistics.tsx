@@ -135,17 +135,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
     padding: 20,
+    marginBottom: 40,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 8,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     color: "white",
-    marginBottom: 20,
     textAlign: "center",
   },
   noDataText: {
@@ -156,7 +157,6 @@ const styles = StyleSheet.create({
   fab: {
     backgroundColor: theme.colors.tertiary,
     alignSelf: "flex-end",
-    marginBottom: 20,
   },
 });
 
