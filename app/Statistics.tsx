@@ -92,7 +92,16 @@ const Statistics = () => {
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.container}>
-          <Text style={styles.title}>İstatistikler</Text>
+          <View style={styles.header}>
+            <Text style={styles.title}>İstatistikler</Text>
+
+            <FAB
+              icon="filter"
+              size="small"
+              style={styles.fab}
+              onPress={toggleFilterModal}
+            />
+          </View>
 
           <FlatList
             data={statisticsData}
@@ -111,13 +120,6 @@ const Statistics = () => {
             onClose={toggleFilterModal}
             onApply={applyFilter}
           />
-
-          <FAB
-            icon="filter"
-            size="medium"
-            style={styles.fab}
-            onPress={toggleFilterModal}
-          />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -134,6 +136,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     padding: 20,
   },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   title: {
     fontSize: 20,
     fontWeight: "bold",
@@ -147,11 +154,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   fab: {
-    position: "absolute",
-    right: 20,
-    bottom: 20,
     backgroundColor: theme.colors.tertiary,
-    zIndex: 10,
+    alignSelf: "flex-end",
+    marginBottom: 20,
   },
 });
 
