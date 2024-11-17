@@ -95,6 +95,7 @@ const Statistics = () => {
           <Text style={styles.title}>İstatistikler</Text>
 
           <FlatList
+            contentContainerStyle={{ paddingBottom: 100 }}
             data={statisticsData}
             renderItem={({ item }) => (
               <StatisticPanel data={item.data} title={item.title} />
