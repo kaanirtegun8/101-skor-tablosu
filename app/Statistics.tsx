@@ -9,7 +9,9 @@ import { filterOptions } from "@/hooks/useSaveGame";
 
 const Statistics = () => {
   const [isModalVisible, setModalVisible] = useState(false);
-  const [filterOptions, setFilterOptions] = useState<filterOptions | undefined>(undefined);
+  const [filterOptions, setFilterOptions] = useState<filterOptions | undefined>(
+    undefined
+  );
   const {
     calculateAverageScoresByMatch,
     calculateAverageScoresPerRound,
@@ -77,7 +79,7 @@ const Statistics = () => {
   ];
 
   const applyFilter = (filters: filterOptions) => {
-    setFilterOptions(filters); 
+    setFilterOptions(filters);
     toggleFilterModal();
   };
 
@@ -101,14 +103,20 @@ const Statistics = () => {
         <Text style={styles.noDataText}>No statistics available</Text>
       )}
 
-      <FilterModal visible={isModalVisible} onClose={toggleFilterModal} onApply={applyFilter} />
-
-      <FAB
-        icon="filter"
-        size="medium"
-        style={styles.fab}
-        onPress={toggleFilterModal}
+      <FilterModal
+        visible={isModalVisible}
+        onClose={toggleFilterModal}
+        onApply={applyFilter}
       />
+
+      <View style={styles.test}>
+        <FAB
+          icon="filter"
+          size="medium"
+          style={styles.fab}
+          onPress={toggleFilterModal}
+        />
+      </View>
     </View>
   );
 };
@@ -117,6 +125,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
+    padding: 20,
+  },
+  test: {
+    backgroundColor: "red",
     padding: 20,
   },
   title: {
