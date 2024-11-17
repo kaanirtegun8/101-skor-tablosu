@@ -58,7 +58,7 @@ const Index = () => {
   const onStartGame = () => {
     closeModals();
     router.push({
-      pathname: "GameScreen",
+      pathname: "/GameScreen",
       params: {
         players: JSON.stringify(selectedPlayers),
         startTime: new Date().toISOString(),
@@ -73,7 +73,7 @@ const Index = () => {
 
     if (game) {
       router.push({
-        pathname: "GameScreen",
+        pathname: "/GameScreen",
         params: {
           players: JSON.stringify(game.playerList),
           scores: JSON.stringify(game.scores),
@@ -101,13 +101,13 @@ const Index = () => {
 
   const onSaveTeams = (team1: Player[], team2: Player[]) => closeModals();
 
-  const showAllGames = async () => router.push({ pathname: "AllGames" });
+  const showAllGames = async () => router.push({ pathname: "/AllGames" });
 
-  const showStatistics = () => router.push({ pathname: "Statistics" });
+  const showStatistics = () => router.push({ pathname: "/Statistics" });
 
-  const showSettings = () => router.push({ pathname: "Settings" });
+  const showSettings = () => router.push({ pathname: "/Settings" });
 
-  const showGameRules = () => router.push({ pathname: "GameRules" });
+  const showGameRules = () => router.push({ pathname: "/GameRules" });
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

@@ -6,6 +6,7 @@ import { theme } from "@/constants/Colors";
 import StatisticPanel from "@/components/StatisticPanel";
 import { FilterModal } from "@/components/FilterModal";
 import { filterOptions } from "@/hooks/useSaveGame";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 const Statistics = () => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -88,47 +89,49 @@ const Statistics = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>İstatistikler</Text>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.container}>
+          <Text style={styles.title}>İstatistikler</Text>
 
-      <FlatList
-        data={statisticsData}
-        renderItem={({ item }) => (
-          <StatisticPanel data={item.data} title={item.title} />
-        )}
-        keyExtractor={(item) => item.id}
-      />
+          <FlatList
+            data={statisticsData}
+            renderItem={({ item }) => (
+              <StatisticPanel data={item.data} title={item.title} />
+            )}
+            keyExtractor={(item) => item.id}
+          />
 
-      {calculateAverageScoresByMatch.length === 0 && (
-        <Text style={styles.noDataText}>No statistics available</Text>
-      )}
+          {calculateAverageScoresByMatch.length === 0 && (
+            <Text style={styles.noDataText}>No statistics available</Text>
+          )}
 
-      <FilterModal
-        visible={isModalVisible}
-        onClose={toggleFilterModal}
-        onApply={applyFilter}
-      />
+          <FilterModal
+            visible={isModalVisible}
+            onClose={toggleFilterModal}
+            onApply={applyFilter}
+          />
 
-      <View style={styles.test}>
-        <FAB
-          icon="filter"
-          size="medium"
-          style={styles.fab}
-          onPress={toggleFilterModal}
-        />
-      </View>
-    </View>
+          <FAB
+            icon="filter"
+            size="medium"
+            style={styles.fab}
+            onPress={toggleFilterModal}
+          />
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-    padding: 20,
-  },
-  test: {
-    backgroundColor: "red",
     padding: 20,
   },
   title: {
@@ -149,8 +152,6 @@ const styles = StyleSheet.create({
     bottom: 20,
     backgroundColor: theme.colors.tertiary,
     zIndex: 10,
-    borderWidth: 1, // Çerçeve ekler
-    borderColor: "red", // Çerçeve rengi
   },
 });
 
