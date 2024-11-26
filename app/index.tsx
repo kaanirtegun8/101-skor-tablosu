@@ -92,14 +92,28 @@ const Index = () => {
   const handleAddPlayer = (playerName: string) => addPlayer(playerName);
 
   const onSelectTeams = () => {
-    const selectedTeamPlayers = players.filter(
-      (_, index) => selectedPlayers[index]
-    );
+    const selectedTeamPlayers = players.filter(player => selectedPlayers.includes(player.name));
     setSelectedTeamPlayers(selectedTeamPlayers);
     setActiveModal("team");
   };
 
-  const onSaveTeams = (team1: Player[], team2: Player[]) => closeModals();
+  const onSaveTeams = (team1: Player[], team2: Player[]) => {
+    closeModals();
+    const playerList = [
+      team1.map((player) => player.name).join(" "),
+      team2.map((player) => player.name).join(" "),
+    ];
+
+    router.push({
+      pathname: "/GameScreen",
+      params: {
+        players: JSON.stringify(playerList),
+        startTime: new Date().toISOString(),
+        gameMode: "team",
+        isContinuing: "false",
+      },
+    });
+  }
 
   const showAllGames = async () => router.push({ pathname: "/AllGames" });
 

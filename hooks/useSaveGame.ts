@@ -8,12 +8,14 @@ export interface Game {
   totalScores: { [key: string]: number };
   startTime?: Date;
   endTime?: Date;
+  gameMode?: "single" | "team";
 }
 
 export interface filterOptions {
   startDate?: Date;
   players?: string[];
   playerCount?: number;
+  gameMode?: "single" | "team";
 }
 
 export const useSaveGame = () => {
@@ -51,7 +53,7 @@ export const useSaveGame = () => {
             ? parsedGame.playerList
             : JSON.parse(parsedGame.playerList),
         };
-        
+
         return gameWithParsedPlayerList;
       }
       return null;
@@ -69,16 +71,26 @@ export const useSaveGame = () => {
       let parsedGames: Game[] = JSON.parse(savedGames);
 
       if (filterOptions) {
-        const { startDate, players, playerCount } = filterOptions;
+        const { startDate, players, playerCount, gameMode } = filterOptions;
 
         parsedGames = parsedGames.filter((game) => {
-          const startDateMatch = startDate ? new Date(game.startTime!) >= new Date(startDate) : true;
-          const playerCountMatch = playerCount ? game.playerList.length === playerCount : true;
-          const playersMatch = players ? players.every(player => game.playerList.includes(player)) : true;
+          const gameModeMatch = gameMode
+            ? (game.gameMode || "single") === gameMode
+            : true;
+          const startDateMatch = startDate
+            ? new Date(game.startTime!) >= new Date(startDate)
+            : true;
+          const playerCountMatch = playerCount
+            ? game.playerList.length === playerCount
+            : true;
+          const playersMatch = players
+            ? players.every((player) => game.playerList.includes(player))
+            : true;
 
-          return startDateMatch && playerCountMatch && playersMatch;
+          return (
+            startDateMatch && playerCountMatch && playersMatch && gameModeMatch
+          );
         });
-
       }
 
       return parsedGames;
@@ -87,7 +99,6 @@ export const useSaveGame = () => {
       return [];
     }
   };
-
 
   const finishGame = async (game: Game) => {
     await saveAllGames(game);

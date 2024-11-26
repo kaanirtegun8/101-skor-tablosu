@@ -8,7 +8,7 @@ import {
 import { Text, Button, IconButton, Card } from "react-native-paper";
 import PlayerList from "@/components/PlayerList";
 import Modal from "react-native-modal";
-import { MIN_PLAYER_COUNT } from "@/constants/GameRules";
+import { MAX_PLAYER_COUNT, MIN_PLAYER_COUNT } from "@/constants/GameRules";
 import { Player } from "@/hooks/usePlayers";
 import { theme } from "@/constants/Colors";
 
@@ -20,8 +20,8 @@ interface PlayerSelectionModalProps {
   onTogglePlayer: (playerName: string) => void;
   onStartGame: () => void;
   onAddPlayer: (playerName: string) => void;
-  onSelectTeams: () => void; 
-  gameMode: 'single' | 'team';
+  onSelectTeams: () => void;
+  gameMode: "single" | "team";
 }
 
 const PlayerSelectionModal = ({
@@ -36,12 +36,12 @@ const PlayerSelectionModal = ({
   gameMode,
 }: PlayerSelectionModalProps) => {
   const [isAddingPlayer, setIsAddingPlayer] = useState(false);
-  const [newPlayerName, setNewPlayerName] = useState('');
+  const [newPlayerName, setNewPlayerName] = useState("");
 
   const handleAddPlayer = () => {
     if (newPlayerName.trim()) {
       onAddPlayer(newPlayerName.trim());
-      setNewPlayerName('');
+      setNewPlayerName("");
       setIsAddingPlayer(false);
     }
   };
@@ -108,7 +108,7 @@ const PlayerSelectionModal = ({
                   mode="contained"
                   onPress={onSelectTeams}
                   style={styles.startButton}
-                  disabled={selectedCount % 2 !== 0}
+                  disabled={selectedCount < MAX_PLAYER_COUNT}
                 >
                   Takımları Seç
                 </Button>
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 10,
     padding: 10,
     marginTop: 20,

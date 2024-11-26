@@ -96,6 +96,7 @@ const GameScreen = () => {
       penalties,
       totalScores,
       startTime: gameStartTime,
+      gameMode,
     } as Game;
 
     try {
@@ -201,6 +202,7 @@ const GameScreen = () => {
       penalties,
       totalScores,
       startTime: gameStartTime,
+      gameMode,
     } as Game;
 
     finishGame(game);

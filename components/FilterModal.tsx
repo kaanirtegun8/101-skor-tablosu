@@ -3,7 +3,7 @@ import { filterOptions } from "@/hooks/useSaveGame";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import Modal from "react-native-modal";
-import { Button, Text, Checkbox, Chip } from "react-native-paper"; // Chip bileşeni burada ekleniyor
+import { Button, Text, Checkbox, Chip, RadioButton } from "react-native-paper";
 import Autocomplete from "react-native-autocomplete-input";
 import { theme } from "@/constants/Colors";
 
@@ -23,6 +23,7 @@ export const FilterModal = ({
   const [query, setQuery] = useState("");
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [showPlayerDropdown, setShowPlayerDropdown] = useState(false);
+  const [gameMode, setGameMode] = useState<"single" | "team">("single");
   const { players } = usePlayers();
 
   const filteredPlayers = players.filter((player) =>
@@ -33,6 +34,7 @@ export const FilterModal = ({
     const filters: filterOptions = {
       playerCount,
       players: selectedPlayers,
+      gameMode,
     };
     onApply(filters);
     onClose();
@@ -51,6 +53,7 @@ export const FilterModal = ({
     setPlayerCount(undefined);
     setQuery("");
     setSelectedPlayers([]);
+    setGameMode("single");
   };
 
   const togglePlayerSelection = (playerName: string) => {
@@ -93,6 +96,23 @@ export const FilterModal = ({
           </View>
         </View>
 
+        <View style={styles.gameMode}>
+          <Text style={styles.gameModeText}>Oyun Modu: </Text>
+          <RadioButton.Group
+            onValueChange={(value) => setGameMode(value as "single" | "team")}
+            value={gameMode}
+          >
+            <View style={styles.radioButtonItem}>
+              <RadioButton.Android value="single" />
+              <Text>Tekli</Text>
+            </View>
+            <View style={styles.radioButtonItem}>
+              <RadioButton.Android value="team" />
+              <Text>Eşli</Text>
+            </View>
+          </RadioButton.Group>
+        </View>
+
         <Autocomplete
           data={query ? filteredPlayers : []}
           defaultValue={query}
@@ -128,7 +148,6 @@ export const FilterModal = ({
                   style={styles.chip}
                 >
                   {name}
-                
                 </Chip>
               ))}
             </View>
@@ -234,5 +253,21 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     borderRadius: 4,
     width: 100,
+  },
+  gameMode: {
+    marginVertical: 12,
+    flexDirection: "row", 
+    justifyContent: "flex-start", 
+    alignItems: "center",
+  },
+  gameModeText: {
+    fontWeight: "600",
+    marginBottom: 6,
+    marginRight: 10,
+  },
+  radioButtonItem: {
+    flexDirection: "row", 
+    alignItems: "center",
+    marginRight: 20, 
   },
 });
