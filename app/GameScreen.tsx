@@ -18,6 +18,7 @@ import DiceComponent from "@/components/Dice";
 import EndGameModal from "@/components/EndGameModal";
 import { useAlert } from "@/hooks/useAlert";
 import Alert from "@/components/Alert";
+import useDiceSystem from "@/hooks/useDiceSystem";
 
 const GameScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -30,6 +31,8 @@ const GameScreen = () => {
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [totalScores, setTotalScores] = useState<{ [key: string]: number }>({});
 
+  const { isDiceSystemEnabled } = useDiceSystem();
+
   const {
     players = [],
     gameMode,
@@ -41,20 +44,21 @@ const GameScreen = () => {
     startTime,
   } = useLocalSearchParams();
 
-  const { showAlert, alert} = useAlert();
-  
+  const { showAlert, alert } = useAlert();
+
   const continuingGame = isContinuing === "true";
 
-  const cleanStartTime = typeof startTime === "string" ? startTime.replaceAll('"', '') : startTime;
+  const cleanStartTime =
+    typeof startTime === "string" ? startTime.replaceAll('"', "") : startTime;
 
   const gameStartTime = Array.isArray(cleanStartTime)
     ? cleanStartTime.length > 0
-      ? new Date(cleanStartTime[0]) 
-      : new Date() 
+      ? new Date(cleanStartTime[0])
+      : new Date()
     : typeof cleanStartTime === "string"
-    ? new Date(cleanStartTime) 
-    : new Date(); 
-  
+    ? new Date(cleanStartTime)
+    : new Date();
+
   useEffect(() => {
     if (continuingGame) {
       setScores(savedScores ? JSON.parse(savedScores as string) : {});
@@ -150,7 +154,7 @@ const GameScreen = () => {
   };
 
   const handleToggleEndGameModal = () => {
-    if(Object.keys(scores).length === 0){
+    if (Object.keys(scores).length === 0) {
       showAlert("Oyunu bitirebilmek için en az bir el skorunu girmelisiniz.");
       return;
     }
@@ -223,8 +227,7 @@ const GameScreen = () => {
           penalties={penalties}
           prizes={prizes}
         />
-
-        <DiceComponent />
+        {isDiceSystemEnabled && <DiceComponent />}
       </ScrollView>
 
       <View style={styles.actionButtons}>
@@ -272,7 +275,7 @@ const GameScreen = () => {
           prizes,
           penalties,
           totalScores,
-          startTime: gameStartTime
+          startTime: gameStartTime,
         }}
       />
 
