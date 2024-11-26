@@ -55,7 +55,7 @@ const AllGames = () => {
                 );
               })
             ) : (
-              <Text>No games played yet</Text>
+              <Text style={styles.noSavedGames}>Kayıtlı oyun bulunamadı</Text>
             )}
           </ScrollView>
 
@@ -105,6 +105,11 @@ const styles = StyleSheet.create({
   fab: {
     backgroundColor: theme.colors.tertiary,
   },
+  noSavedGames: {
+    color: "white",
+    textAlign: "center",
+    marginTop: 20,
+  }
 });
 
 export default AllGames;
