@@ -15,22 +15,20 @@ import { Game, useSaveGame } from "@/hooks/useSaveGame";
 import { useAlert } from "@/hooks/useAlert";
 import Alert from "@/components/Alert";
 
+type ValidPath = "/GameScreen" | "/AllGames" | "/GameRules" | "/Settings" | "/Statistics" | "/";
+
 const Index = () => {
-  const [activeModal, setActiveModal] = useState<
-    "none" | "mode" | "player" | "team"
-  >("none");
+  const [activeModal, setActiveModal] = useState<"none" | "mode" | "player" | "team">("none");
   const [gameMode, setGameMode] = useState<"single" | "team">("single");
   const { players, addPlayer } = usePlayers();
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [selectedTeamPlayers, setSelectedTeamPlayers] = useState<Player[]>([]);
 
   const router = useRouter();
-  const { loadGame, loadAllGames } = useSaveGame();
+  const { loadGame } = useSaveGame();
   const { alert, showAlert } = useAlert();
 
-  const startNewGame = () => {
-    setActiveModal("mode");
-  };
+  const startNewGame = () => setActiveModal("mode");
 
   const closeModals = () => {
     setActiveModal("none");
@@ -42,23 +40,18 @@ const Index = () => {
     setActiveModal("player");
   };
 
-  const onTogglePlayer = (selectedPlayerName: string) => {
-    let updatedSelectedPlayers = [...selectedPlayers];
-    const playerIndex = updatedSelectedPlayers.indexOf(selectedPlayerName);
-
-    if (playerIndex === -1) {
-      updatedSelectedPlayers.push(selectedPlayerName);
-    } else {
-      updatedSelectedPlayers.splice(playerIndex, 1);
-    }
-
-    setSelectedPlayers(updatedSelectedPlayers);
+  const onTogglePlayer = (playerName: string) => {
+    setSelectedPlayers((prevPlayers) =>
+      prevPlayers.includes(playerName)
+        ? prevPlayers.filter((name) => name !== playerName)
+        : [...prevPlayers, playerName]
+    );
   };
 
   const onStartGame = () => {
     closeModals();
     router.push({
-      pathname: "/GameScreen",
+      pathname: "/GameScreen" as ValidPath,
       params: {
         players: JSON.stringify(selectedPlayers),
         startTime: new Date().toISOString(),
@@ -69,30 +62,35 @@ const Index = () => {
   };
 
   const continueLastGame = async () => {
-    const game: Game = await loadGame();
-
-    if (game) {
-      router.push({
-        pathname: "/GameScreen",
-        params: {
-          players: JSON.stringify(game.playerList),
-          scores: JSON.stringify(game.scores),
-          prizes: JSON.stringify(game.prizes),
-          penalties: JSON.stringify(game.penalties),
-          totalScores: JSON.stringify(game.totalScores),
-          startTime: JSON.stringify(game.startTime),
-          isContinuing: "true",
-        },
-      });
-    } else {
-      showAlert("Kayıtlı oyun bulunamadı.");
+    try {
+      const game: Game | null = await loadGame();
+      if (game) {
+        router.push({
+          pathname: "/GameScreen" as ValidPath,
+          params: {
+            players: JSON.stringify(game.playerList),
+            scores: JSON.stringify(game.scores),
+            prizes: JSON.stringify(game.prizes),
+            penalties: JSON.stringify(game.penalties),
+            totalScores: JSON.stringify(game.totalScores),
+            startTime: JSON.stringify(game.startTime),
+            isContinuing: "true",
+          },
+        });
+      } else {
+        showAlert("Kayıtlı oyun bulunamadı.");
+      }
+    } catch (error) {
+      showAlert("Oyun yüklenirken bir hata oluştu.");
     }
   };
 
   const handleAddPlayer = (playerName: string) => addPlayer(playerName);
 
   const onSelectTeams = () => {
-    const selectedTeamPlayers = players.filter(player => selectedPlayers.includes(player.name));
+    const selectedTeamPlayers = players.filter((player) =>
+      selectedPlayers.includes(player.name)
+    );
     setSelectedTeamPlayers(selectedTeamPlayers);
     setActiveModal("team");
   };
@@ -105,7 +103,7 @@ const Index = () => {
     ];
 
     router.push({
-      pathname: "/GameScreen",
+      pathname: "/GameScreen" as ValidPath,
       params: {
         players: JSON.stringify(playerList),
         startTime: new Date().toISOString(),
@@ -113,18 +111,12 @@ const Index = () => {
         isContinuing: "false",
       },
     });
-  }
+  };
 
-  const showAllGames = async () => router.push({ pathname: "/AllGames" });
-
-  const showStatistics = () => router.push({ pathname: "/Statistics" });
-
-  const showSettings = () => router.push({ pathname: "/Settings" });
-
-  const showGameRules = () => router.push({ pathname: "/GameRules" });
+  const navigateTo = (path: ValidPath) => router.push({ pathname: path });
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={styles.gestureHandler}>
       <PaperProvider theme={theme}>
         <ParallaxScrollView
           headerImage={
@@ -138,77 +130,50 @@ const Index = () => {
             light: theme.colors.surface,
           }}
         >
-          <ThemedView style={styles.container}>
-            <Button
-              mode="contained"
-              onPress={startNewGame}
-              style={styles.button}
-              icon={() => (
-                <Icon name="gamepad-variant" size={24} color="white" />
-              )}
-            >
-              <Text style={styles.buttonLabel}>Yeni Oyuna Başla</Text>
-            </Button>
-          </ThemedView>
-
-          <ThemedView style={styles.container}>
-            <Button
-              mode="contained"
-              onPress={continueLastGame}
-              style={styles.button}
-              icon={() => (
-                <Icon name="play-circle-outline" size={24} color="white" />
-              )}
-            >
-              <Text style={styles.buttonLabel}>Son Oyuna Devam Et</Text>
-            </Button>
-          </ThemedView>
-
-          <ThemedView style={styles.container}>
-            <Button
-              mode="contained"
-              onPress={showAllGames}
-              style={styles.button}
-              icon={() => <Icon name="history" size={24} color="white" />}
-            >
-              <Text style={styles.buttonLabel}>Kayıtlı Oyunları Gör</Text>
-            </Button>
-          </ThemedView>
-
-          <ThemedView style={styles.container}>
-            <Button
-              mode="contained"
-              onPress={showStatistics}
-              style={styles.button}
-              icon={() => <Icon name="chart-line" size={24} color="white" />}
-            >
-              <Text style={styles.buttonLabel}>İstatistikler</Text>
-            </Button>
-          </ThemedView>
-
-          <ThemedView style={styles.container}>
-            <Button
-              mode="contained"
-              onPress={showSettings}
-              style={styles.button}
-              icon={() => <Icon name="cog" size={24} color="white" />}
-            >
-              <Text style={styles.buttonLabel}>Ayarlar</Text>
-            </Button>
-          </ThemedView>
-
-          <ThemedView style={styles.container}>
-            <Button
-              mode="contained"
-              onPress={showGameRules}
-              style={styles.button}
-              icon={() => (
-                <Icon name="file-document-outline" size={24} color="white" />
-              )}
-            >
-              <Text style={styles.buttonLabel}>Oyun Kuralları</Text>
-            </Button>
-          </ThemedView>
+          {[
+            {
+              label: "Yeni Oyuna Başla",
+              onPress: startNewGame,
+              icon: "gamepad-variant",
+            },
+            {
+              label: "Son Oyuna Devam Et",
+              onPress: continueLastGame,
+              icon: "play-circle-outline",
+            },
+            {
+              label: "Kayıtlı Oyunları Gör",
+              onPress: () => navigateTo("/AllGames"),
+              icon: "history",
+            },
+            {
+              label: "İstatistikler",
+              onPress: () => navigateTo("/Statistics"),
+              icon: "chart-line",
+            },
+            {
+              label: "Ayarlar",
+              onPress: () => navigateTo("/Settings"),
+              icon: "cog",
+            },
+            {
+              label: "Oyun Kuralları",
+              onPress: () => navigateTo("/GameRules"),
+              icon: "file-document-outline",
+            },
+          ].map(({ label, onPress, icon }, index) => (
+            <ThemedView style={styles.container} key={index}>
+              <Button
+                mode="contained"
+                onPress={onPress}
+                contentStyle={styles.buttonContent}
+                style={styles.button}
+                icon={() => <Icon name={icon} size={24} color="white" />}
+              >
+                <Text style={styles.buttonLabel}>{label}</Text>
+              </Button>
+            </ThemedView>
+          ))}
         </ParallaxScrollView>
 
         <ModeSelectionModal
@@ -243,15 +208,19 @@ const Index = () => {
 };
 
 const styles = StyleSheet.create({
+  gestureHandler: {
+    flex: 1,
+  },
   container: {
     backgroundColor: theme.colors.background,
   },
   headerImage: {
     width: "100%",
     height: 200,
+    backgroundColor: "rgba(0, 0, 0, 0.5)"
   },
   button: {
-    marginVertical: 8,
+    marginVertical: 12,
     borderRadius: 10,
     shadowColor: "black",
     shadowOpacity: 0.3,
@@ -259,9 +228,14 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: "100%",
   },
+  buttonContent: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
   buttonLabel: {
     justifyContent: "flex-start",
     textAlign: "left",
+    fontSize: 18,
     color: "white",
   },
 });
