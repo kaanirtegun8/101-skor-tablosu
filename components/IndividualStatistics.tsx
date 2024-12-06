@@ -73,13 +73,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0d9f9",
   },
   playerName: {
-    fontSize: 18,
+    fontSize: 30,
     color: "white",
+    fontWeight: "bold",
   },
   selectionContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 20,
+    marginBottom: 20,
   },
   statisticsContainer: {
     flex: 1,
