@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, ImageBackground } from "react-native";
+import { StyleSheet, ImageBackground, StatusBar } from "react-native";
 import { Button, PaperProvider, Text } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -118,6 +118,7 @@ const Index = () => {
   return (
     <GestureHandlerRootView style={styles.gestureHandler}>
       <PaperProvider theme={theme}>
+        <StatusBar barStyle="dark-content" />
         <ParallaxScrollView
           headerImage={
             <ImageBackground

@@ -2,7 +2,7 @@
   "expo": {
     "name": "okeyscoreboard",
     "slug": "okeyscoreboard",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -41,9 +41,7 @@
         "projectId": "bccd0628-bf1a-46df-b53e-8b173ec27889"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.1", 
     "updates": {
       "url": "https://u.expo.dev/bccd0628-bf1a-46df-b53e-8b173ec27889"
     }

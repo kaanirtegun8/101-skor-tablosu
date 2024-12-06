@@ -1,11 +1,5 @@
 import { Stack } from "expo-router";
 
-type RootStackParamList = {
-  index: undefined; 
-  GameScreen: { players: string[]; gameMode: 'single' | 'team' };
-};
-
-
 export default function RootLayout() {
   return (
     <Stack>

@@ -1,162 +1,70 @@
+import GameStatistics from "@/components/GameStatistics";
+import IndividualStatistics from "@/components/IndividualStatistics";
 import React, { useState } from "react";
-import { useStatistic } from "@/hooks/useStatistic";
-import { FlatList, StyleSheet, View } from "react-native";
-import { FAB, Text } from "react-native-paper";
-import { theme } from "@/constants/Colors";
-import StatisticPanel from "@/components/StatisticPanel";
-import { FilterModal } from "@/components/FilterModal";
-import { filterOptions } from "@/hooks/useSaveGame";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, View } from "react-native";
+import { Button, Divider } from "react-native-paper";
+
+type Tab = "game" | "individual";
 
 const Statistics = () => {
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [filterOptions, setFilterOptions] = useState<filterOptions | undefined>(
-    undefined
-  );
-  const {
-    calculateAverageScoresByMatch,
-    calculateAverageScoresPerRound,
-    calculateAveragePenaltiesByGame,
-    calculateAverageRewardsByGame,
-    calculateConsecutive200s,
-    calculateConsecutiveNegatives,
-    calculateAverageRankingByGame,
-    maxScores,
-    minScores,
-    playerRatings,
-  } = useStatistic(filterOptions);
-
-  const statisticsData = [
-    {
-      id: "1",
-      data: calculateAverageScoresByMatch,
-      title: "Oyun Başına Ortalama Puan",
-    },
-    {
-      id: "2",
-      data: calculateAverageScoresPerRound,
-      title: "Tur Başına Ortalama Puan",
-    },
-    {
-      id: "3",
-      data: calculateAverageRankingByGame,
-      title: "Oyun Başına Ortalama Sıralama",
-    },
-    {
-      id: "4",
-      data: calculateAveragePenaltiesByGame,
-      title: "Oyun Başına Ortalama Cezalar",
-    },
-    {
-      id: "5",
-      data: calculateAverageRewardsByGame,
-      title: "Oyun Başına Ortalama Ödüller",
-    },
-    {
-      id: "6",
-      data: calculateConsecutive200s,
-      title: "Üst üste açamama (el sayısı)",
-    },
-    {
-      id: "7",
-      data: calculateConsecutiveNegatives,
-      title: "Üst üste bitme (el sayısı)",
-    },
-    {
-      id: "8",
-      data: maxScores,
-      title: "Bir turda Alınan en yüksek puan",
-    },
-    {
-      id: "9",
-      data: minScores,
-      title: "Bir turda alınan en düşük puan",
-    },
-    {
-      id: "10",
-      data: playerRatings,
-      title: "AI performans değerlendirmeleri (10 üzerinden)",
-    },
-  ];
-
-  const applyFilter = (filters: filterOptions) => {
-    setFilterOptions(filters);
-    toggleFilterModal();
-  };
-
-  const toggleFilterModal = () => {
-    setModalVisible(!isModalVisible);
-  };
+  const [activeTab, setActiveTab] = useState<Tab>("game");
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <Text style={styles.title}>İstatistikler</Text>
+    <View style={styles.container}>
+      <View style={styles.buttonContainer}>
+        <Button
+          mode="text"
+          style={styles.button}
+          contentStyle={styles.buttonContent}
+          labelStyle={{ color: activeTab === "game" ? "#FFA500" : "black" }}
+          onPress={() => setActiveTab("game")}
+        >
+          Oyun
+        </Button>
 
-            <FAB
-              icon="filter"
-              size="small"
-              style={styles.fab}
-              onPress={toggleFilterModal}
-            />
-          </View>
+        <Divider style={styles.divider} />
 
-          <FlatList
-            data={statisticsData}
-            renderItem={({ item }) => (
-              <StatisticPanel data={item.data} title={item.title} />
-            )}
-            keyExtractor={(item) => item.id}
-          />
+        <Button
+          mode="text"
+          style={styles.button}
+          contentStyle={styles.buttonContent}
+          labelStyle={{
+            color: activeTab === "individual" ? "#FFA500" : "black",
+          }}
+          onPress={() => setActiveTab("individual")}
+        >
+          Bireysel
+        </Button>
+      </View>
 
-          {calculateAverageScoresByMatch.length === 0 && (
-            <Text style={styles.noDataText}>No statistics available</Text>
-          )}
-
-          <FilterModal
-            visible={isModalVisible}
-            onClose={toggleFilterModal}
-            onApply={applyFilter}
-          />
-        </View>
-      </SafeAreaView>
-    </SafeAreaProvider>
+      {activeTab === "game" ? <GameStatistics /> : <IndividualStatistics />}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 2,
-    backgroundColor: theme.colors.background,
-  },
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background,
-    padding: 20,
-    marginBottom: 40,
   },
-  header: {
+  buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
+    justifyContent: "space-around",
+    backgroundColor: "#f0d9f9",
+    padding: 0,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "white",
-    textAlign: "center",
+  button: {
+    flex: 1,  
+    justifyContent: "center", 
+    alignItems: "center", 
   },
-  noDataText: {
-    fontSize: 16,
-    color: "white",
-    textAlign: "center",
+  buttonContent: {
+    paddingVertical: 10, 
+    paddingHorizontal: 40, 
   },
-  fab: {
-    backgroundColor: theme.colors.tertiary,
-    alignSelf: "flex-end",
+  divider: {
+    width: 2,
+    backgroundColor: "white",
+    height: "100%",
   },
 });
 
