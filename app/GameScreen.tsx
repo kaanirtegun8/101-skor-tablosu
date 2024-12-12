@@ -19,6 +19,7 @@ import EndGameModal from "@/components/EndGameModal";
 import { useAlert } from "@/hooks/useAlert";
 import Alert from "@/components/Alert";
 import useDiceSystem from "@/hooks/useDiceSystem";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const GameScreen = () => {
   const [isModalVisible, setModalVisible] = useState(false);
@@ -217,40 +218,42 @@ const GameScreen = () => {
     : [];
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.wrapper}>
-        <ScoreTable
-          playerList={playerList}
-          scores={scores}
-          onPrizeOrPenaltyModalToggle={handleTogglePrizeModal}
-        />
-        <PenaltyTable
-          playerList={playerList}
-          penalties={penalties}
-          prizes={prizes}
-        />
-        {isDiceSystemEnabled && <DiceComponent />}
-      </ScrollView>
+    <>
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <View style={styles.wrapper}>
+          <ScoreTable
+            playerList={playerList}
+            scores={scores}
+            onPrizeOrPenaltyModalToggle={handleTogglePrizeModal}
+          />
+          <PenaltyTable
+            playerList={playerList}
+            penalties={penalties}
+            prizes={prizes}
+          />
+          {isDiceSystemEnabled && <DiceComponent />}
+        </View>
 
-      <View style={styles.actionButtons}>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            onPress={handleOpenTotalScoreModal}
-            style={styles.scoreButton}
-          >
-            <Text style={styles.buttonText}>Toplam Skor</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={handleToggleEndGameModal}
-            style={styles.endGameButton}
-          >
-            <Text style={styles.buttonText}>Oyunu Bitir</Text>
+        <View style={styles.actionButtons}>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              onPress={handleOpenTotalScoreModal}
+              style={styles.scoreButton}
+            >
+              <Text style={styles.buttonText}>Toplam Skor</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleToggleEndGameModal}
+              style={styles.endGameButton}
+            >
+              <Text style={styles.buttonText}>Oyunu Bitir</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity onPress={toggleModal} style={styles.addScoreButton}>
+            <Text style={styles.addScoreButtonText}>Yeni El Skoru Gir</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={toggleModal} style={styles.addScoreButton}>
-          <Text style={styles.addScoreButtonText}>Yeni El Skoru Gir</Text>
-        </TouchableOpacity>
-      </View>
+      </SafeAreaView>
 
       <AddScoreModal
         onAddScore={handleAddScore}
@@ -295,19 +298,19 @@ const GameScreen = () => {
         finishGame={handleFinishGame}
       />
       <Alert message={alert.message} visible={alert.visible} />
-    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-    padding: 8,
-  },
   container: {
     flex: 1,
-    justifyContent: "space-between",
+    backgroundColor: theme.colors.background,
+    gap: 40,
+  },
+  wrapper: {
+    padding: 8,
+    position: "relative",
   },
   buttonRow: {
     flexDirection: "row",
@@ -351,9 +354,7 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     alignItems: "center",
-    backgroundColor: theme.colors.background,
-    paddingBottom: 20,
-    paddingHorizontal: 8,
+    padding: 8,
     width: "100%",
   },
   diceContainer: {
