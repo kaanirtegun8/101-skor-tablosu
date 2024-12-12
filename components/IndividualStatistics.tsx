@@ -36,14 +36,18 @@ const IndividualStatistics = () => {
           {selectedPlayer ? "Oyuncuyu Değiştir" : "Oyuncu Seç"}
         </Button>
         <Text style={{ color: "white" }}>:</Text>
-        <Text style={styles.playerName}>
-          {selectedPlayer?.name || "Oyuncu Seçilmedi"}
-        </Text>
+        {selectedPlayer ? (
+          <Text style={styles.playerName}>{selectedPlayer?.name}</Text>
+        ) : (
+          <Text style={styles.noPlayer}>Oyuncu Seçilmedi</Text>
+        )}
       </View>
 
-      <View style={styles.statisticsContainer}>
-        <PlayerStatistics player={selectedPlayer} />
-      </View>
+      {selectedPlayer && (
+        <View style={styles.statisticsContainer}>
+          <PlayerStatistics player={selectedPlayer} />
+        </View>
+      )}
 
       <PlayerStatisticsModal
         visible={isPlayerStatisticsModalVisible}
@@ -85,7 +89,12 @@ const styles = StyleSheet.create({
   },
   statisticsContainer: {
     flex: 1,
-  }
+  },
+  noPlayer: {
+    color: "white",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
 });
 
 export default IndividualStatistics;
