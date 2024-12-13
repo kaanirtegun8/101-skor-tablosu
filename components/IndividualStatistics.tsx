@@ -5,9 +5,10 @@ import { theme } from "@/constants/Colors";
 import PlayerStatisticsModal from "./PlayerStatisticsModal";
 import { Button } from "react-native-paper";
 import PlayerStatistics from "./PlayerStatistics";
+import useSelectedPlayer from "@/hooks/useSelectedPlayer";
 
 const IndividualStatistics = () => {
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const { selectedPlayer, setSelectedPlayer } = useSelectedPlayer();
   const [isPlayerStatisticsModalVisible, setPlayerStatisticsModalVisible] =
     useState(false);
 

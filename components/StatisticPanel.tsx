@@ -39,17 +39,6 @@ const StatisticPanel = ({data, title}: StatisticPanelProps) => {
         renderItem={renderItem}
         keyExtractor={(item) => item.playerName}
       />
-
-      <View style={styles.footer}>
-        <Button
-          onPress={handleShowAllPress}
-          textColor="white"
-          contentStyle={styles.buttonContentStyle}
-          icon={"plus"}
-        >
-          Tümünü Göster
-        </Button>
-      </View>
     </View>
   );
 };
@@ -87,14 +76,6 @@ const styles = StyleSheet.create({
   itemPoints: {
     color: "white",
     fontSize: 14,
-  },
-  footer: {
-    backgroundColor: theme.colors.secondary,
-    borderBottomEndRadius: 12,
-    borderBottomStartRadius: 12,
-  },
-  buttonContentStyle: {
-    direction: "rtl",
   },
 });
 

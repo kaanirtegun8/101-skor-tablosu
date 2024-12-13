@@ -220,6 +220,7 @@ const styles = StyleSheet.create({
   },
   autocompleteInput: {
     width: "100%",
+    paddingLeft: 12,
   },
   suggestionItem: {
     padding: 10,
