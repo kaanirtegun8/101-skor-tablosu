@@ -3,8 +3,8 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { theme } from "@/constants/Colors";
@@ -218,21 +218,19 @@ const GameScreen = () => {
     : [];
 
   return (
-    <>
-      <SafeAreaView style={styles.container} edges={['bottom']}>
-        <View style={styles.wrapper}>
-          <ScoreTable
-            playerList={playerList}
-            scores={scores}
-            onPrizeOrPenaltyModalToggle={handleTogglePrizeModal}
-          />
-          <PenaltyTable
-            playerList={playerList}
-            penalties={penalties}
-            prizes={prizes}
-          />
-          {isDiceSystemEnabled && <DiceComponent />}
-        </View>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <View style={styles.wrapper}>
+        <ScoreTable
+          playerList={playerList}
+          scores={scores}
+          onPrizeOrPenaltyModalToggle={handleTogglePrizeModal}
+        />
+        <PenaltyTable
+          playerList={playerList}
+          penalties={penalties}
+          prizes={prizes}
+        />
+        {isDiceSystemEnabled && <DiceComponent />}
 
         <View style={styles.actionButtons}>
           <View style={styles.buttonRow}>
@@ -253,7 +251,7 @@ const GameScreen = () => {
             <Text style={styles.addScoreButtonText}>Yeni El Skoru Gir</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
 
       <AddScoreModal
         onAddScore={handleAddScore}
@@ -298,19 +296,23 @@ const GameScreen = () => {
         finishGame={handleFinishGame}
       />
       <Alert message={alert.message} visible={alert.visible} />
-    </>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: theme.colors.background,
-    gap: 40,
+    display: "flex",
+    flex: 1,
   },
   wrapper: {
     padding: 8,
     position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    height: Dimensions.get("window").height - 120,
   },
   buttonRow: {
     flexDirection: "row",
@@ -353,9 +355,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   actionButtons: {
-    alignItems: "center",
     padding: 8,
-    width: "100%",
   },
   diceContainer: {
     alignItems: "center",

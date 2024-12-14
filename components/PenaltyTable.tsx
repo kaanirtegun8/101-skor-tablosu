@@ -1,6 +1,6 @@
 import useRewardSystem from "@/hooks/useRewardSystem";
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 interface PenaltyTableProps {
@@ -17,7 +17,7 @@ const PenaltyTable = ({ playerList, penalties, prizes }: PenaltyTableProps) => {
   }
 
   return (
-    <View style={styles.penaltyContainer}>
+    <ScrollView style={styles.penaltyContainer}>
       <Text style={styles.penaltyTitle}>{penaltyText}</Text>
       <View style={styles.tableContainer}>
         {playerList.map((player, index) => (
@@ -48,7 +48,7 @@ const PenaltyTable = ({ playerList, penalties, prizes }: PenaltyTableProps) => {
           </View>
         ))}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -57,6 +57,8 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#d4a373",
     borderRadius: 8,
+    height: 200,
+    maxHeight: 250,
   },
   penaltyTitle: {
     fontWeight: "bold",
@@ -82,16 +84,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 2,
   },
-  prizeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   prizeText: {
     fontSize: 14,
     marginRight: 4,
   },
+  prizeContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
   starContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
   },
 });
 
