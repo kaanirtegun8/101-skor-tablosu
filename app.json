@@ -2,7 +2,7 @@
   "expo": {
     "name": "okeyscoreboard",
     "slug": "okeyscoreboard",
-    "version": "1.0.1",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.kaanirtegun8.okeyscoreboard",
+      "buildNumber": "2",
       "newArchEnabled": true
     },
     "android": {
@@ -41,7 +42,7 @@
         "projectId": "bccd0628-bf1a-46df-b53e-8b173ec27889"
       }
     },
-    "runtimeVersion": "1.0.1", 
+    "runtimeVersion": "1.1.1", 
     "updates": {
       "url": "https://u.expo.dev/bccd0628-bf1a-46df-b53e-8b173ec27889"
     }
